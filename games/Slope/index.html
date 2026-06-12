@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Slope — CassiusBreak</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: #0d001a;
+      color: #ffffff;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    #game {
+      display: block;
+      position: fixed;
+      inset: 0;
+      touch-action: none;
+    }
+
+    .corner-link {
+      position: fixed;
+      top: 14px;
+      left: 18px;
+      z-index: 5;
+      color: rgba(170, 170, 204, 0.7);
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      transition: color 0.2s, text-shadow 0.2s;
+    }
+
+    .corner-link:hover {
+      color: #00ff88;
+      text-shadow: 0 0 10px rgba(0, 255, 136, 0.6);
+    }
+
+    .vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background: radial-gradient(ellipse at center, transparent 55%, rgba(8, 0, 18, 0.55) 100%);
+    }
+
+    /* ── HUD ────────────────────────────────────────────── */
+    #hud {
+      position: fixed;
+      top: 12px;
+      left: 0;
+      right: 0;
+      z-index: 4;
+      text-align: center;
+      pointer-events: none;
+      display: none;
+    }
+
+    #hud-score {
+      font-size: 2.4rem;
+      font-weight: 900;
+      color: #00ff88;
+      letter-spacing: 2px;
+      text-shadow: 0 0 18px rgba(0, 255, 136, 0.7), 0 0 40px rgba(0, 255, 136, 0.3);
+      line-height: 1.1;
+    }
+
+    #hud-sub {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: #aaaacc;
+      text-transform: uppercase;
+    }
+
+    /* ── OVERLAYS ───────────────────────────────────────── */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(13, 0, 26, 0.7);
+      backdrop-filter: blur(5px);
+    }
+
+    .overlay.hidden {
+      display: none;
+    }
+
+    .panel {
+      text-align: center;
+      padding: 44px 70px;
+      background: rgba(13, 0, 26, 0.8);
+      border: 1px solid rgba(0, 255, 136, 0.45);
+      border-radius: 18px;
+      box-shadow: 0 0 40px rgba(0, 255, 136, 0.18), inset 0 0 30px rgba(0, 255, 136, 0.05);
+      max-width: 92vw;
+    }
+
+    .title {
+      font-size: 3.2rem;
+      font-weight: 900;
+      letter-spacing: 10px;
+      text-transform: uppercase;
+      color: #00ff88;
+      text-shadow: 0 0 24px rgba(0, 255, 136, 0.8), 0 0 60px rgba(0, 255, 136, 0.35);
+      margin-bottom: 10px;
+    }
+
+    .title.red {
+      color: #ff3a5e;
+      text-shadow: 0 0 24px rgba(255, 58, 94, 0.8), 0 0 60px rgba(255, 58, 94, 0.35);
+    }
+
+    .subtitle {
+      color: #aaaacc;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .stat-big {
+      font-size: 2.6rem;
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: 0 0 16px rgba(0, 255, 136, 0.5);
+      margin: 10px 0 2px;
+    }
+
+    .stat-small {
+      color: #aaaacc;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .controls-hint {
+      margin-top: 18px;
+      color: #aaaacc;
+      font-size: 0.78rem;
+      letter-spacing: 1px;
+      line-height: 1.9;
+    }
+
+    kbd {
+      display: inline-block;
+      min-width: 26px;
+      padding: 3px 7px;
+      border: 1px solid rgba(0, 255, 136, 0.5);
+      border-radius: 5px;
+      background: rgba(0, 255, 136, 0.08);
+      color: #00ff88;
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 800;
+    }
+
+    .btn {
+      margin-top: 24px;
+      padding: 13px 46px;
+      background: transparent;
+      border: 2px solid #00ff88;
+      border-radius: 8px;
+      color: #00ff88;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 800;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+    }
+
+    .btn:hover {
+      background: #00ff88;
+      color: #0d001a;
+      box-shadow: 0 0 28px rgba(0, 255, 136, 0.55);
+    }
+
+    @media (max-width: 600px) {
+      .panel { padding: 32px 26px; }
+      .title { font-size: 2.1rem; letter-spacing: 6px; }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="game"></canvas>
+  <div class="vignette"></div>
+  <a class="corner-link" href="/">&larr; CassiusBreak</a>
+
+  <!-- HUD -->
+  <div id="hud">
+    <div id="hud-score">0</div>
+    <div id="hud-sub"><span id="hud-best">BEST 0</span> &nbsp;&middot;&nbsp; <span id="hud-speed">SPEED 0</span></div>
+  </div>
+
+  <!-- START SCREEN -->
+  <div class="overlay" id="start-overlay">
+    <div class="panel">
+      <div class="title">Slope</div>
+      <div class="subtitle">Roll. Dodge. Survive.</div>
+      <div class="controls-hint">
+        Steer with <kbd>&larr;</kbd> <kbd>&rarr;</kbd> or <kbd>A</kbd> <kbd>D</kbd><br>
+        Touch left / right side on mobile<br>
+        Avoid the red blocks &mdash; don't fall off the edge!
+      </div>
+      <button class="btn" id="start-btn">Play</button>
+    </div>
+  </div>
+
+  <!-- GAME OVER SCREEN -->
+  <div class="overlay hidden" id="over-overlay">
+    <div class="panel">
+      <div class="title red">Game Over</div>
+      <div class="subtitle" id="over-reason">You crashed!</div>
+      <div class="stat-big" id="over-score">0</div>
+      <div class="stat-small">SCORE &nbsp;&middot;&nbsp; BEST <span id="over-best">0</span></div>
+      <button class="btn" id="restart-btn">Restart</button>
+      <div class="controls-hint">Press <kbd>Space</kbd> to restart</div>
+    </div>
+  </div>
+
+  <!-- PAUSE SCREEN -->
+  <div class="overlay hidden" id="pause-overlay">
+    <div class="panel">
+      <div class="title">Paused</div>
+      <div class="controls-hint">Press <kbd>P</kbd> to resume</div>
+    </div>
+  </div>
+
+  <script>
+  (() => {
+    'use strict';
+
+    // ── Canvas setup ───────────────────────────────────────
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    let Wpx = 0, Hpx = 0, DPR = 1, focal = 600;
+
+    function resize() {
+      DPR = Math.min(window.devicePixelRatio || 1, 2);
+      Wpx = window.innerWidth;
+      Hpx = window.innerHeight;
+      canvas.width = Math.round(Wpx * DPR);
+      canvas.height = Math.round(Hpx * DPR);
+      canvas.style.width = Wpx + 'px';
+      canvas.style.height = Hpx + 'px';
+      makeStars();
+    }
+    window.addEventListener('resize', resize);
+
+    // ── Constants ──────────────────────────────────────────
+    const TRACK_W = 15;
+    const HALF_W = TRACK_W / 2;
+    const SEG = 55;             // terrain control-point spacing
+    const BALL_R = 0.9;
+    const GRAV = 42;
+    const VIEW_DIST = 235;
+    const V0 = 26;
+    const VMAX = 92;
+    const LANES = [-5, -2.5, 0, 2.5, 5];   // interior grid lines
+    const BEST_KEY = 'cassiusbreak-slope-best';
+
+    const COL = {
+      grid: '0,255,136',
+      edge: '#b4ffe1',
+      obStroke: '255,58,94',
+      floorNear: [20, 7, 48],
+      floorFar: [46, 16, 86],
+      holeFill: [4, 0, 11]
+    };
+
+    // ── Helpers ────────────────────────────────────────────
+    const clamp = (v, a, b) => v < a ? a : (v > b ? b : v);
+    const lerp = (a, b, t) => a + (b - a) * t;
+    const rand = (a, b) => a + Math.random() * (b - a);
+
+    function loadBest() {
+      try { return Math.max(0, parseInt(localStorage.getItem(BEST_KEY), 10) || 0); }
+      catch (e) { return 0; }
+    }
+    function saveBest(v) {
+      try { localStorage.setItem(BEST_KEY, String(v)); } catch (e) {}
+    }
+
+    // ── Terrain (procedural downhill profile) ──────────────
+    let heights = [], grades = [];
+
+    function resetTerrain() {
+      heights = [0];
+      grades = [0.45];
+      ensureTerrain(8);
+    }
+
+    function ensureTerrain(n) {
+      while (heights.length <= n + 2) {
+        const i = heights.length - 1;
+        let g;
+        if (i < 3) g = 0.45;                                   // gentle runway
+        else if (Math.random() < 0.13) g = rand(1.15, 1.6);    // sudden steep drop
+        else g = clamp(grades[grades.length - 1] + rand(-0.34, 0.34), 0.22, 1.25);
+        grades.push(g);
+        heights.push(heights[heights.length - 1] - g * SEG);
+      }
+    }
+
+    // Catmull-Rom interpolation of the height profile
+    function terrainY(z) {
+      if (z < 0) z = 0;
+      const i = Math.floor(z / SEG);
+      ensureTerrain(i + 2);
+      const t = z / SEG - i;
+      const p0 = heights[Math.max(0, i - 1)], p1 = heights[i],
+            p2 = heights[i + 1], p3 = heights[i + 2];
+      const t2 = t * t, t3 = t2 * t;
+      return 0.5 * ((2 * p1) + (-p0 + p2) * t +
+        (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 +
+        (-p0 + 3 * p1 - 3 * p2 + p3) * t3);
+    }
+
+    function terrainSlope(z) {
+      return (terrainY(z + 0.6) - terrainY(z - 0.6)) / 1.2;
+    }
+
+    // ── Game state ─────────────────────────────────────────
+    let state = 'menu';          // menu | playing | dying | over
+    let paused = false;
+    let ball = { x: 0, y: 0, z: 8, vx: 0, vy: 0 };
+    let speed = V0, dist = 0, score = 0, spin = 0;
+    let best = loadBest();
+    let obstacles = [], holes = [], particles = [];
+    let nextSpawnZ = 110;
+    let time = 0, timeScale = 1, deathT = 0, overAt = 0;
+    let deathCause = '', ballHidden = false, shake = 0;
+    const cam = { x: 0, y: 0, z: 0, pitch: 0.5, roll: 0 };
+
+    function difficulty() {
+      return clamp((speed - V0) / (78 - V0), 0, 1);
+    }
+
+    function resetRun() {
+      resetTerrain();
+      ball = { x: 0, y: terrainY(8) + BALL_R, z: 8, vx: 0, vy: 0 };
+      speed = V0; dist = 0; score = 0; spin = 0;
+      obstacles = []; holes = []; particles = [];
+      nextSpawnZ = 110;
+      time = 0; timeScale = 1; deathT = 0;
+      deathCause = ''; ballHidden = false; shake = 0;
+      cam.z = ball.z - 13;
+      cam.x = 0;
+      cam.y = terrainY(cam.z + 4) + 6.8;
+      const lookZ = ball.z + 26;
+      const lookY = (terrainY(lookZ) + ball.y) * 0.5 - 1.5;
+      cam.pitch = Math.atan2(cam.y - lookY, lookZ - cam.z);
+      cam.roll = 0;
+    }
+
+    // ── Obstacle spawning ──────────────────────────────────
+    function obX(ob) {
+      return ob.move ? ob.baseX + Math.sin(time * ob.spd + ob.ph) * ob.amp : ob.x;
+    }
+
+    function pushSpan(xa, xb, z, h) {
+      const hw = (xb - xa) / 2;
+      if (hw < 0.5) return;
+      obstacles.push({ x: (xa + xb) / 2, hw, zc: z, hz: 1.3, h });
+    }
+
+    function spawnWave() {
+      const d = difficulty();
+      const z = nextSpawnZ;
+      const r = Math.random();
+      let adv = lerp(50, 27, d);
+
+      if (r < 0.22) {
+        // single block, sometimes sliding side-to-side
+        const hw = 1.7;
+        const ob = { x: rand(-HALF_W + hw + 0.7, HALF_W - hw - 0.7), hw, zc: z, hz: 1.3, h: 2.3 };
+        if (d > 0.3 && Math.random() < 0.45) {
+          ob.move = true;
+          ob.baseX = 0;
+          ob.amp = Math.min(HALF_W - hw - 0.5, 4.2);
+          ob.spd = 1.4 + d * 1.3;
+          ob.ph = rand(0, Math.PI * 2);
+        }
+        obstacles.push(ob);
+      } else if (r < 0.42) {
+        // twin gate — one opening somewhere across the track
+        const gap = lerp(5.4, 3.8, d);
+        const oc = rand(-HALF_W + gap / 2 + 0.8, HALF_W - gap / 2 - 0.8);
+        pushSpan(-HALF_W, oc - gap / 2, z, 2.3);
+        pushSpan(oc + gap / 2, HALF_W, z, 2.3);
+      } else if (r < 0.62) {
+        // tall barrier wall from one side
+        const w = lerp(0.5, 0.68, d) * TRACK_W;
+        if (Math.random() < 0.5) pushSpan(-HALF_W, -HALF_W + w, z, 3.4);
+        else pushSpan(HALF_W - w, HALF_W, z, 3.4);
+      } else if (r < 0.82) {
+        // hole in the floor
+        const w = TRACK_W * rand(0.42, 0.6);
+        const x0 = rand(-HALF_W, HALF_W - w);
+        holes.push({ x0, x1: x0 + w, z0: z, z1: z + rand(8, 14) });
+        adv *= 0.9;
+      } else {
+        // slalom — three staggered walls
+        let side = Math.random() < 0.5 ? -1 : 1;
+        const dz = lerp(20, 14, d);
+        const w = 0.52 * TRACK_W;
+        for (let k = 0; k < 3; k++) {
+          if (side < 0) pushSpan(-HALF_W, -HALF_W + w, z + k * dz, 2.6);
+          else pushSpan(HALF_W - w, HALF_W, z + k * dz, 2.6);
+          side *= -1;
+        }
+        adv = 3 * dz * 0.9 + 20;
+      }
+      nextSpawnZ = z + adv;
+    }
+
+    function inHole(x, z) {
+      for (let i = 0; i < holes.length; i++) {
+        const h = holes[i];
+        if (z > h.z0 + 0.2 && z < h.z1 - 0.2 && x > h.x0 + 0.25 && x < h.x1 - 0.25) return true;
+      }
+      return false;
+    }
+
+    // ── Input ──────────────────────────────────────────────
+    const keys = { l: false, r: false };
+    let touchDir = 0;
+
+    function steerDir() {
+      const k = (keys.r ? 1 : 0) - (keys.l ? 1 : 0);
+      return k !== 0 ? k : touchDir;
+    }
+
+    window.addEventListener('keydown', e => {
+      if (e.code === 'ArrowLeft' || e.code === 'KeyA') { keys.l = true; e.preventDefault(); }
+      else if (e.code === 'ArrowRight' || e.code === 'KeyD') { keys.r = true; e.preventDefault(); }
+      else if (e.code === 'Space' || e.code === 'Enter') {
+        e.preventDefault();
+        if (state === 'menu') start();
+        else if (state === 'over' && performance.now() - overAt > 300) start();
+      } else if (e.code === 'KeyR') {
+        if (state === 'over') start();
+      } else if (e.code === 'KeyP') {
+        if (state === 'playing' || paused) togglePause();
+      }
+    });
+
+    window.addEventListener('keyup', e => {
+      if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.l = false;
+      else if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.r = false;
+    });
+
+    function readTouch(e) {
+      if (e.touches.length === 0) { touchDir = 0; return; }
+      const t = e.touches[e.touches.length - 1];
+      touchDir = t.clientX < Wpx / 2 ? -1 : 1;
+    }
+    canvas.addEventListener('touchstart', e => { e.preventDefault(); readTouch(e); }, { passive: false });
+    canvas.addEventListener('touchmove', e => { e.preventDefault(); readTouch(e); }, { passive: false });
+    canvas.addEventListener('touchend', e => { e.preventDefault(); readTouch(e); }, { passive: false });
+    canvas.addEventListener('touchcancel', e => { e.preventDefault(); touchDir = 0; }, { passive: false });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && state === 'playing' && !paused) togglePause();
+    });
+
+    // ── UI elements ────────────────────────────────────────
+    const hud = document.getElementById('hud');
+    const hudScore = document.getElementById('hud-score');
+    const hudBest = document.getElementById('hud-best');
+    const hudSpeed = document.getElementById('hud-speed');
+    const startOverlay = document.getElementById('start-overlay');
+    const overOverlay = document.getElementById('over-overlay');
+    const pauseOverlay = document.getElementById('pause-overlay');
+
+    document.getElementById('start-btn').addEventListener('click', e => { e.currentTarget.blur(); start(); });
+    document.getElementById('restart-btn').addEventListener('click', e => { e.currentTarget.blur(); start(); });
+
+    function start() {
+      resetRun();
+      state = 'playing';
+      paused = false;
+      startOverlay.classList.add('hidden');
+      overOverlay.classList.add('hidden');
+      pauseOverlay.classList.add('hidden');
+      hud.style.display = 'block';
+    }
+
+    function togglePause() {
+      paused = !paused;
+      pauseOverlay.classList.toggle('hidden', !paused);
+    }
+
+    function gameOver() {
+      state = 'over';
+      overAt = performance.now();
+      if (score > best) { best = score; saveBest(best); }
+      document.getElementById('over-score').textContent = score;
+      document.getElementById('over-best').textContent = best;
+      document.getElementById('over-reason').textContent =
+        deathCause === 'hit' ? 'You smashed into a block!' : 'You fell into the void!';
+      overOverlay.classList.remove('hidden');
+    }
+
+    // ── Death ──────────────────────────────────────────────
+    function hitBlock() {
+      deathCause = 'hit';
+      state = 'dying';
+      deathT = 0;
+      ballHidden = true;
+      timeScale = 0.3;
+      shake = 1;
+      const shades = ['#00ff88', '#aaffdd', '#ffffff', '#66ffbb'];
+      for (let i = 0; i < 18; i++) {
+        particles.push({
+          x: ball.x, y: ball.y, z: ball.z,
+          vx: rand(-9, 9), vy: rand(3, 15), vz: rand(-4, 7),
+          size: rand(0.16, 0.42), life: 1,
+          col: shades[(Math.random() * shades.length) | 0]
+        });
+      }
+    }
+
+    function startFall() {
+      deathCause = 'fell';
+      state = 'dying';
+      deathT = 0;
+    }
+
+    // ── Physics ────────────────────────────────────────────
+    function step(h) {
+      const tvx = steerDir() * (9 + speed * 0.26);
+      ball.vx += (tvx - ball.vx) * Math.min(1, h * 9);
+      ball.x += ball.vx * h;
+      ball.z += speed * h;
+      ball.vy -= GRAV * h;
+      ball.y += ball.vy * h;
+      dist += speed * h;
+      spin += speed * h / BALL_R;
+
+      const gY = terrainY(ball.z) + BALL_R;
+      const supported = Math.abs(ball.x) <= HALF_W - 0.05 && !inHole(ball.x, ball.z);
+
+      if (ball.y <= gY + 0.08) {
+        if (supported) {
+          if (ball.y < gY) ball.y = gY;
+          ball.vy = terrainSlope(ball.z) * speed;
+        } else {
+          startFall();
+          return;
+        }
+      }
+
+      // obstacle collisions
+      for (let i = 0; i < obstacles.length; i++) {
+        const ob = obstacles[i];
+        if (Math.abs(ob.zc - ball.z) < ob.hz + BALL_R * 0.7 &&
+            Math.abs(obX(ob) - ball.x) < ob.hw + BALL_R * 0.75 &&
+            ball.y - BALL_R * 0.45 < terrainY(ob.zc) + ob.h) {
+          hitBlock();
+          return;
+        }
+      }
+    }
+
+    function advance(dt, rdt) {
+      if (state === 'playing') {
+        speed += dt * 2.4 * (1 - speed / (VMAX + 6));
+        const sub = Math.max(1, Math.ceil(speed * dt / 1.3));
+        for (let k = 0; k < sub; k++) {
+          step(dt / sub);
+          if (state !== 'playing') break;
+        }
+        while (nextSpawnZ < ball.z + 280) spawnWave();
+        obstacles = obstacles.filter(o => o.zc + o.hz > ball.z - 26);
+        holes = holes.filter(hl => hl.z1 > ball.z - 26);
+        score = Math.floor(dist * 0.5);
+      } else if (state === 'dying') {
+        deathT += rdt;
+        timeScale = Math.min(1, timeScale + rdt * 1.1);
+        if (deathCause === 'fell') {
+          ball.vy -= GRAV * dt;
+          ball.y += ball.vy * dt;
+          ball.z += speed * dt;
+          speed *= Math.pow(0.02, dt);
+        } else {
+          speed *= Math.pow(0.001, dt);
+        }
+        if (deathT > 1.0) gameOver();
+      }
+    }
+
+    function updateParticles(dt) {
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.life -= dt * 1.1;
+        if (p.life <= 0) { particles.splice(i, 1); continue; }
+        p.vy -= GRAV * 0.6 * dt;
+        p.x += p.vx * dt; p.y += p.vy * dt; p.z += p.vz * dt;
+      }
+    }
+
+    // ── Camera ─────────────────────────────────────────────
+    function updateCamera(dt) {
+      cam.z = ball.z - 13;
+      const air = Math.max(0, ball.y - (terrainY(ball.z) + BALL_R));
+      const targetY = terrainY(cam.z + 4) + 6.8 + air * 0.3;
+      cam.y += (targetY - cam.y) * Math.min(1, dt * 7);
+      cam.x += (ball.x * 0.5 - cam.x) * Math.min(1, dt * 7);
+
+      const lookZ = ball.z + 26;
+      const lookY = (terrainY(lookZ) + ball.y - BALL_R) * 0.5 - 1.5;
+      const targetPitch = Math.atan2(cam.y - lookY, lookZ - cam.z);
+      cam.pitch += (targetPitch - cam.pitch) * Math.min(1, dt * 7);
+
+      const targetRoll = clamp(-ball.vx * 0.012, -0.1, 0.1);
+      cam.roll += (targetRoll - cam.roll) * Math.min(1, dt * 6);
+      shake = Math.max(0, shake - dt * 2.2);
+    }
+
+    // ── Projection ─────────────────────────────────────────
+    let sinP = 0, cosP = 1, pcy = 0;
+
+    function project(px, py, pz) {
+      const dx = px - cam.x, dy = py - cam.y, dz = pz - cam.z;
+      const vz = -dy * sinP + dz * cosP;
+      if (vz < 0.12) return null;
+      const vy = dy * cosP + dz * sinP;
+      const s = focal / vz;
+      return { x: Wpx / 2 + dx * s, y: pcy - vy * s, z: vz };
+    }
+
+    function fogAt(z) {
+      return Math.pow(clamp((z - cam.z) / VIEW_DIST, 0, 1), 1.5);
+    }
+
+    function mixCol(a, b, t) {
+      return 'rgb(' + Math.round(lerp(a[0], b[0], t)) + ',' +
+        Math.round(lerp(a[1], b[1], t)) + ',' + Math.round(lerp(a[2], b[2], t)) + ')';
+    }
+
+    // ── Stars ──────────────────────────────────────────────
+    let stars = [];
+    function makeStars() {
+      stars = [];
+      const n = Math.round((Wpx * Hpx) / 14000);
+      for (let i = 0; i < n; i++) {
+        stars.push({
+          x: Math.random() * Wpx, y: Math.random() * Hpx * 0.85,
+          r: rand(0.5, 1.6), ph: rand(0, 6.28), spd: rand(0.6, 2.2), a: rand(0.25, 0.7)
+        });
+      }
+    }
+
+    // ── Render ─────────────────────────────────────────────
+    function render() {
+      sinP = Math.sin(cam.pitch);
+      cosP = Math.cos(cam.pitch);
+      pcy = Hpx * 0.45;
+      focal = Hpx * (0.98 - 0.12 * clamp((speed - V0) / (VMAX - V0), 0, 1));
+
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+
+      // world transform: roll + shake around screen center
+      ctx.save();
+      ctx.translate(Wpx / 2 + rand(-1, 1) * shake * 7, Hpx / 2 + rand(-1, 1) * shake * 7);
+      ctx.rotate(cam.roll);
+      ctx.translate(-Wpx / 2, -Hpx / 2);
+
+      // floor slices (near → far, non-linear spacing)
+      const N = 78;
+      const slices = [];
+      for (let i = 0; i <= N; i++) {
+        const zw = cam.z + 3 + Math.pow(i / N, 1.65) * VIEW_DIST;
+        const y = terrainY(zw);
+        slices.push({
+          zw, y,
+          l: project(-HALF_W, y, zw),
+          r: project(HALF_W, y, zw),
+          fog: fogAt(zw)
+        });
+      }
+
+      // sky gradient anchored to the projected horizon
+      const last = slices[N];
+      const hy = (last.l && last.r) ? clamp((last.l.y + last.r.y) / 2 / Hpx, 0.08, 0.85) : 0.4;
+      const margin = Math.max(Wpx, Hpx) * 0.12;
+      const sky = ctx.createLinearGradient(0, -margin, 0, Hpx + margin);
+      sky.addColorStop(0, '#04000d');
+      sky.addColorStop(Math.max(0.01, hy * 0.55), '#0d0326');
+      sky.addColorStop(hy, '#2c0e54');
+      sky.addColorStop(Math.min(1, hy + 0.07), '#180835');
+      sky.addColorStop(1, '#0a0220');
+      ctx.fillStyle = sky;
+      ctx.fillRect(-margin, -margin, Wpx + margin * 2, Hpx + margin * 2);
+
+      // horizon glow
+      const hyPx = hy * Hpx;
+      const glow = ctx.createRadialGradient(Wpx / 2, hyPx, 0, Wpx / 2, hyPx, Wpx * 0.55);
+      glow.addColorStop(0, 'rgba(0,255,136,0.10)');
+      glow.addColorStop(1, 'rgba(0,255,136,0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(-margin, -margin, Wpx + margin * 2, Hpx + margin * 2);
+
+      // stars (sky only)
+      ctx.fillStyle = '#bfffe6';
+      for (let i = 0; i < stars.length; i++) {
+        const st = stars[i];
+        if (st.y > hyPx - 8) continue;
+        ctx.globalAlpha = st.a * (0.55 + 0.45 * Math.sin(time * st.spd + st.ph));
+        ctx.beginPath();
+        ctx.arc(st.x, st.y, st.r, 0, 6.2832);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+
+      // floor fill
+      for (let i = 0; i < N; i++) {
+        const a = slices[i], b = slices[i + 1];
+        if (!a.l || !a.r || !b.l || !b.r) continue;
+        // overlap slightly past the far edge to avoid hairline seams
+        const ex = 1.03;
+        const blx = a.l.x + (b.l.x - a.l.x) * ex, bly = a.l.y + (b.l.y - a.l.y) * ex;
+        const brx = a.r.x + (b.r.x - a.r.x) * ex, bry = a.r.y + (b.r.y - a.r.y) * ex;
+        ctx.fillStyle = mixCol(COL.floorNear, COL.floorFar, a.fog);
+        ctx.beginPath();
+        ctx.moveTo(a.l.x, a.l.y);
+        ctx.lineTo(a.r.x, a.r.y);
+        ctx.lineTo(brx, bry);
+        ctx.lineTo(blx, bly);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      // transverse grid lines (LOD spacing: 4 → 8 → 16 units)
+      ctx.lineCap = 'round';
+      for (let zg = Math.ceil((cam.z + 3) / 4) * 4; zg < cam.z + VIEW_DIST; zg += 4) {
+        const dz = zg - cam.z;
+        if (dz > 70 && (zg / 4) % 2) continue;
+        if (dz > 150 && (zg / 8) % 2) continue;
+        const y = terrainY(zg);
+        const pl = project(-HALF_W, y, zg), pr = project(HALF_W, y, zg);
+        if (!pl || !pr) continue;
+        const fg = fogAt(zg);
+        ctx.strokeStyle = 'rgba(' + COL.grid + ',' + (0.55 * (1 - fg)).toFixed(3) + ')';
+        ctx.lineWidth = clamp(2.2 - dz * 0.012, 0.6, 2.2);
+        ctx.beginPath();
+        ctx.moveTo(pl.x, pl.y);
+        ctx.lineTo(pr.x, pr.y);
+        ctx.stroke();
+      }
+
+      // longitudinal lane lines
+      ctx.lineWidth = 1.2;
+      for (let li = 0; li < LANES.length; li++) {
+        const lx = LANES[li];
+        ctx.strokeStyle = 'rgba(' + COL.grid + ',0.4)';
+        ctx.beginPath();
+        let started = false;
+        for (let i = 0; i <= N; i += 2) {
+          const s = slices[i];
+          const p = project(lx, s.y, s.zw);
+          if (!p) { started = false; continue; }
+          if (!started) { ctx.moveTo(p.x, p.y); started = true; }
+          else ctx.lineTo(p.x, p.y);
+        }
+        ctx.stroke();
+      }
+
+      // edge rails (glow pass + bright pass)
+      for (let side = 0; side < 2; side++) {
+        const pts = [];
+        for (let i = 0; i <= N; i++) {
+          const p = side === 0 ? slices[i].l : slices[i].r;
+          if (p) pts.push(p);
+        }
+        if (pts.length < 2) continue;
+        for (let pass = 0; pass < 2; pass++) {
+          ctx.strokeStyle = pass === 0 ? 'rgba(' + COL.grid + ',0.22)' : COL.edge;
+          ctx.lineWidth = pass === 0 ? 6 : 2;
+          ctx.globalAlpha = pass === 0 ? 1 : 0.9;
+          ctx.beginPath();
+          ctx.moveTo(pts[0].x, pts[0].y);
+          for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+          ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
+      }
+
+      // holes (drawn over the grid)
+      for (let i = 0; i < holes.length; i++) {
+        const hl = holes[i];
+        const z0 = Math.max(hl.z0, cam.z + 3), z1 = Math.min(hl.z1, cam.z + VIEW_DIST);
+        if (z1 <= z0) continue;
+        for (let za = z0; za < z1; za += 3) {
+          const zb = Math.min(za + 3, z1);
+          const ya = terrainY(za), yb = terrainY(zb);
+          const a0 = project(hl.x0, ya, za), a1 = project(hl.x1, ya, za);
+          const b1 = project(hl.x1, yb, zb), b0 = project(hl.x0, yb, zb);
+          if (!a0 || !a1 || !b0 || !b1) continue;
+          const fg = fogAt(za);
+          ctx.fillStyle = mixCol(COL.holeFill, COL.floorFar, fg);
+          ctx.beginPath();
+          ctx.moveTo(a0.x, a0.y);
+          ctx.lineTo(a1.x, a1.y);
+          ctx.lineTo(b1.x, b1.y);
+          ctx.lineTo(b0.x, b0.y);
+          ctx.closePath();
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(' + COL.obStroke + ',' + (0.45 * (1 - fg)).toFixed(3) + ')';
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+        }
+      }
+
+      // obstacles (far → near)
+      const sorted = obstacles.slice().sort((a, b) => b.zc - a.zc);
+      for (let i = 0; i < sorted.length; i++) {
+        const ob = sorted[i];
+        const z0 = ob.zc - ob.hz, z1 = ob.zc + ob.hz;
+        if (z0 < cam.z + 1 || z0 > cam.z + VIEW_DIST) continue;
+        const ox = obX(ob);
+        const x0 = ox - ob.hw, x1 = ox + ob.hw;
+        const gy0 = terrainY(z0), gy1 = terrainY(z1);
+        const topY = terrainY(ob.zc) + ob.h;
+        const fg = fogAt(ob.zc);
+        ctx.globalAlpha = clamp(1 - fg * 0.9, 0.05, 1);
+
+        const tA = project(x0, topY, z0), tB = project(x1, topY, z0);
+        const tC = project(x1, topY, z1), tD = project(x0, topY, z1);
+        const fA = project(x0, gy0 - 0.3, z0), fB = project(x1, gy0 - 0.3, z0);
+        if (!tA || !tB || !tC || !tD || !fA || !fB) { ctx.globalAlpha = 1; continue; }
+
+        // top face
+        ctx.fillStyle = 'rgba(255,60,100,0.5)';
+        ctx.beginPath();
+        ctx.moveTo(tA.x, tA.y); ctx.lineTo(tB.x, tB.y);
+        ctx.lineTo(tC.x, tC.y); ctx.lineTo(tD.x, tD.y);
+        ctx.closePath(); ctx.fill();
+
+        // visible side face
+        let sx = null;
+        if (cam.x < x0) sx = x0;
+        else if (cam.x > x1) sx = x1;
+        if (sx !== null) {
+          const sA = project(sx, gy0 - 0.3, z0), sB = project(sx, gy1 - 0.3, z1);
+          const sC = project(sx, topY, z1), sD = project(sx, topY, z0);
+          if (sA && sB && sC && sD) {
+            ctx.fillStyle = 'rgba(120,6,34,0.92)';
+            ctx.beginPath();
+            ctx.moveTo(sA.x, sA.y); ctx.lineTo(sB.x, sB.y);
+            ctx.lineTo(sC.x, sC.y); ctx.lineTo(sD.x, sD.y);
+            ctx.closePath(); ctx.fill();
+          }
+        }
+
+        // front face + neon edge
+        ctx.fillStyle = 'rgba(178,12,48,0.94)';
+        ctx.beginPath();
+        ctx.moveTo(fA.x, fA.y); ctx.lineTo(fB.x, fB.y);
+        ctx.lineTo(tB.x, tB.y); ctx.lineTo(tA.x, tA.y);
+        ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = 'rgba(' + COL.obStroke + ',0.95)';
+        ctx.lineWidth = 1.6;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+
+      // ball shadow + ball
+      if (!ballHidden) {
+        const bp = project(ball.x, ball.y, ball.z);
+        if (bp) {
+          const rs = focal * BALL_R / bp.z;
+          const gp = project(ball.x, terrainY(ball.z) + 0.04, ball.z);
+          const airH = ball.y - (terrainY(ball.z) + BALL_R);
+          if (gp && airH > -2) {
+            const k = clamp(1 - airH / 14, 0.15, 1);
+            ctx.fillStyle = 'rgba(0,0,0,' + (0.45 * k).toFixed(3) + ')';
+            ctx.beginPath();
+            ctx.ellipse(gp.x, gp.y, rs * 1.25 * k + rs * 0.2, rs * 0.42 * k + rs * 0.08, 0, 0, 6.2832);
+            ctx.fill();
+          }
+
+          ctx.save();
+          ctx.shadowColor = 'rgba(0,255,136,0.85)';
+          ctx.shadowBlur = rs * 0.9;
+          const grad = ctx.createRadialGradient(
+            bp.x - rs * 0.35, bp.y - rs * 0.4, rs * 0.12, bp.x, bp.y, rs);
+          grad.addColorStop(0, '#eafff7');
+          grad.addColorStop(0.25, '#7dffc8');
+          grad.addColorStop(0.6, '#00e07a');
+          grad.addColorStop(1, '#005c36');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(bp.x, bp.y, rs, 0, 6.2832);
+          ctx.fill();
+          ctx.restore();
+
+          // rolling bands
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(bp.x, bp.y, rs, 0, 6.2832);
+          ctx.clip();
+          for (let k = 0; k < 3; k++) {
+            const ph = ((spin * 0.16) + k / 3) % 1;
+            const yOff = (1 - 2 * ph) * rs;
+            const hw = Math.sqrt(Math.max(0, rs * rs - yOff * yOff));
+            ctx.strokeStyle = 'rgba(0,46,26,' + (0.5 * (1 - Math.pow(Math.abs(yOff) / rs, 2))).toFixed(3) + ')';
+            ctx.lineWidth = Math.max(1, rs * 0.1);
+            ctx.beginPath();
+            ctx.ellipse(bp.x, bp.y + yOff * 0.92, hw, Math.max(1, rs * 0.16), 0, 0, 6.2832);
+            ctx.stroke();
+          }
+          ctx.restore();
+
+          ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.arc(bp.x, bp.y, rs, 0, 6.2832);
+          ctx.stroke();
+        }
+      }
+
+      // particles
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        const pp = project(p.x, p.y, p.z);
+        if (!pp) continue;
+        ctx.globalAlpha = clamp(p.life, 0, 1);
+        ctx.fillStyle = p.col;
+        ctx.beginPath();
+        ctx.arc(pp.x, pp.y, Math.max(1, focal * p.size / pp.z), 0, 6.2832);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+
+      ctx.restore();
+
+      // HUD text
+      if (state !== 'menu') {
+        hudScore.textContent = score;
+        hudSpeed.textContent = 'SPEED ' + Math.round(speed);
+        hudBest.textContent = 'BEST ' + Math.max(best, score);
+      }
+    }
+
+    // ── Main loop ──────────────────────────────────────────
+    let lastT = 0;
+    function frame(now) {
+      const rdt = Math.min(0.05, (now - lastT) / 1000) || 0;
+      lastT = now;
+      if (!paused) {
+        const dt = rdt * timeScale;
+        if (state === 'playing' || state === 'dying') advance(dt, rdt);
+        time += dt;
+        updateCamera(state === 'playing' || state === 'dying' ? dt : rdt);
+        updateParticles(dt);
+      }
+      render();
+      requestAnimationFrame(frame);
+    }
+
+    // ── Init ───────────────────────────────────────────────
+    resize();
+    resetRun();
+    hudBest.textContent = 'BEST ' + best;
+    requestAnimationFrame(frame);
+  })();
+  </script>
+
+</body>
+</html>
