@@ -294,7 +294,8 @@
     const VIEW_DIST = 235;
     const V0 = 26;
     const VMAX = 92;
-    const JUMP_V = 20;          // upward launch velocity on jump
+    const JUMP_V = 17;          // upward launch velocity on jump
+    const LAUNCH_MAX = 20;      // cap on ramp launch velocity (keeps air time sane)
     const LANES = [-5, -2.5, 0, 2.5, 5];   // interior grid lines
     const BEST_KEY = 'cassiusbreak-slope-best';
 
@@ -559,14 +560,14 @@
         const x0 = rand(-HALF_W, HALF_W - w);
         holes.push({ x0, x1: x0 + w, z0: z, z1: z + rand(8, 14) });
         adv *= 0.9;
-      } else if (r < 0.85) {
+      } else if (r < 0.82) {
         // launch ramp — ride up and fly over what's ahead
         const w = TRACK_W * rand(0.42, 0.7);
         const x0 = rand(-HALF_W, HALF_W - w);
-        const len = rand(9, 15);
-        const h = rand(2.2, 3.4);
+        const len = rand(11, 16);
+        const h = rand(1.8, 2.6);
         ramps.push({ x0, x1: x0 + w, z0: z, z1: z + len, h });
-        adv = len + lerp(42, 24, d);
+        adv = len + lerp(44, 26, d);
       } else {
         // slalom — three staggered walls
         let side = Math.random() < 0.5 ? -1 : 1;
@@ -774,8 +775,8 @@
       if (onGround) {
         if (supported) {
           if (ball.y < gY) ball.y = gY;
-          // on a ramp, follow its upward incline so the ball launches off the top
-          ball.vy = (rs > 0 ? rs : terrainSlope(ball.z)) * speed;
+          // on a ramp, follow its incline but cap the launch so air time stays reasonable
+          ball.vy = rs > 0 ? Math.min(rs * speed, LAUNCH_MAX) : terrainSlope(ball.z) * speed;
           if (jumpReq) { ball.vy = JUMP_V; jumpReq = false; sfx.jump(); }
         } else {
           startFall();
@@ -837,7 +838,7 @@
     function updateCamera(dt) {
       cam.z = ball.z - 13;
       const air = Math.max(0, ball.y - (terrainY(ball.z) + BALL_R));
-      const targetY = terrainY(cam.z + 4) + 6.8 + air * 0.3;
+      const targetY = terrainY(cam.z + 4) + 6.8 + Math.min(air, 6) * 0.18;
       cam.y += (targetY - cam.y) * Math.min(1, dt * 7);
       cam.x += (ball.x * 0.5 - cam.x) * Math.min(1, dt * 7);
 
