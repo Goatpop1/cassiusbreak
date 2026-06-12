@@ -49,6 +49,20 @@
       text-shadow: 0 0 10px rgba(0, 255, 136, 0.6);
     }
 
+    .sound-toggle {
+      top: auto;
+      left: auto;
+      bottom: 14px;
+      right: 18px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font: inherit;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
     .vignette {
       position: fixed;
       inset: 0;
@@ -206,6 +220,7 @@
   <canvas id="game"></canvas>
   <div class="vignette"></div>
   <a class="corner-link" href="/">&larr; CassiusBreak</a>
+  <button class="corner-link sound-toggle" id="sound-toggle" type="button">&#9834; ON</button>
 
   <!-- HUD -->
   <div id="hud">
@@ -221,7 +236,8 @@
       <div class="controls-hint">
         Steer with <kbd>&larr;</kbd> <kbd>&rarr;</kbd> or <kbd>A</kbd> <kbd>D</kbd><br>
         Touch left / right side on mobile<br>
-        Avoid the red blocks &mdash; don't fall off the edge!
+        Avoid the red blocks &mdash; don't fall off the edge!<br>
+        <kbd>M</kbd> or tap &#9834; to mute
       </div>
       <button class="btn" id="start-btn">Play</button>
     </div>
@@ -300,6 +316,123 @@
     }
     function saveBest(v) {
       try { localStorage.setItem(BEST_KEY, String(v)); } catch (e) {}
+    }
+
+    // ── Audio (tiny synth, no assets) ──────────────────────
+    const MUTE_KEY = 'cassiusbreak-slope-muted';
+    let muted = false;
+    try { muted = localStorage.getItem(MUTE_KEY) === '1'; } catch (e) {}
+    let actx = null;
+
+    function ensureAudio() {
+      if (!actx) {
+        try { actx = new (window.AudioContext || window.webkitAudioContext)(); }
+        catch (e) { return; }
+      }
+      if (actx.state === 'suspended') actx.resume();
+    }
+
+    function tone(f0, f1, dur, type, vol, delay) {
+      if (muted || !actx) return;
+      const t = actx.currentTime + (delay || 0);
+      const o = actx.createOscillator();
+      const g = actx.createGain();
+      o.type = type;
+      o.frequency.setValueAtTime(f0, t);
+      o.frequency.exponentialRampToValueAtTime(Math.max(1, f1), t + dur);
+      g.gain.setValueAtTime(vol, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g);
+      g.connect(actx.destination);
+      o.start(t);
+      o.stop(t + dur + 0.05);
+    }
+
+    function noiseBurst(dur, vol, freq) {
+      if (muted || !actx) return;
+      const n = Math.floor(actx.sampleRate * dur);
+      const buf = actx.createBuffer(1, n, actx.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
+      const src = actx.createBufferSource();
+      src.buffer = buf;
+      const f = actx.createBiquadFilter();
+      f.type = 'lowpass';
+      f.frequency.value = freq;
+      const g = actx.createGain();
+      g.gain.value = vol;
+      src.connect(f);
+      f.connect(g);
+      g.connect(actx.destination);
+      src.start();
+    }
+
+    const sfx = {
+      go()   { tone(220, 560, 0.18, 'square', 0.06); },
+      hit()  { tone(300, 40, 0.5, 'sawtooth', 0.13); noiseBurst(0.3, 0.2, 1400); },
+      fall() { tone(520, 60, 0.7, 'sine', 0.1); },
+      over() { tone(200, 55, 0.45, 'triangle', 0.1); },
+      best() {
+        tone(523, 523, 0.1, 'square', 0.07, 0);
+        tone(659, 659, 0.1, 'square', 0.07, 0.11);
+        tone(784, 784, 0.18, 'square', 0.07, 0.22);
+      }
+    };
+
+    // continuous rolling rumble whose pitch/volume track speed
+    let rollOsc = null, rollNoise = null, rollGain = null, rollFilter = null;
+
+    function startRoll() {
+      if (!actx || rollGain) return;
+      rollGain = actx.createGain();
+      rollGain.gain.value = 0;
+      rollGain.connect(actx.destination);
+
+      rollFilter = actx.createBiquadFilter();
+      rollFilter.type = 'lowpass';
+      rollFilter.frequency.value = 300;
+      rollFilter.connect(rollGain);
+
+      rollOsc = actx.createOscillator();
+      rollOsc.type = 'sawtooth';
+      rollOsc.frequency.value = 50;
+      rollOsc.connect(rollFilter);
+      rollOsc.start();
+
+      // 1s looping brown-noise bed
+      const n = Math.floor(actx.sampleRate);
+      const buf = actx.createBuffer(1, n, actx.sampleRate);
+      const d = buf.getChannelData(0);
+      let last = 0;
+      for (let i = 0; i < n; i++) {
+        last = (last + 0.02 * (Math.random() * 2 - 1)) / 1.02;
+        d[i] = last * 3.5;
+      }
+      rollNoise = actx.createBufferSource();
+      rollNoise.buffer = buf;
+      rollNoise.loop = true;
+      rollNoise.connect(rollFilter);
+      rollNoise.start();
+    }
+
+    function stopRoll() {
+      if (!rollGain) return;
+      try { rollOsc.stop(); rollNoise.stop(); } catch (e) {}
+      rollGain.disconnect();
+      rollOsc = rollNoise = rollFilter = rollGain = null;
+    }
+
+    function updateRoll() {
+      if (!rollGain) return;
+      const t = actx.currentTime;
+      if (muted || paused || state !== 'playing') {
+        rollGain.gain.setTargetAtTime(0, t, 0.1);
+        return;
+      }
+      const sp = clamp((speed - V0) / (VMAX - V0), 0, 1);
+      rollGain.gain.setTargetAtTime(0.04 + sp * 0.06, t, 0.08);
+      rollOsc.frequency.setTargetAtTime(48 + sp * 70, t, 0.08);
+      rollFilter.frequency.setTargetAtTime(260 + sp * 900, t, 0.08);
     }
 
     // ── Terrain (procedural downhill profile) ──────────────
@@ -463,6 +596,8 @@
         if (state === 'over') start();
       } else if (e.code === 'KeyP') {
         if (state === 'playing' || paused) togglePause();
+      } else if (e.code === 'KeyM') {
+        toggleMute();
       }
     });
 
@@ -497,6 +632,16 @@
     document.getElementById('start-btn').addEventListener('click', e => { e.currentTarget.blur(); start(); });
     document.getElementById('restart-btn').addEventListener('click', e => { e.currentTarget.blur(); start(); });
 
+    const soundToggle = document.getElementById('sound-toggle');
+    function updateSoundLabel() { soundToggle.innerHTML = muted ? '&#9834; OFF' : '&#9834; ON'; }
+    function toggleMute() {
+      muted = !muted;
+      try { localStorage.setItem(MUTE_KEY, muted ? '1' : '0'); } catch (e) {}
+      updateSoundLabel();
+    }
+    soundToggle.addEventListener('click', e => { e.currentTarget.blur(); ensureAudio(); toggleMute(); });
+    updateSoundLabel();
+
     function start() {
       resetRun();
       state = 'playing';
@@ -505,6 +650,9 @@
       overOverlay.classList.add('hidden');
       pauseOverlay.classList.add('hidden');
       hud.style.display = 'block';
+      ensureAudio();
+      startRoll();
+      sfx.go();
     }
 
     function togglePause() {
@@ -515,7 +663,10 @@
     function gameOver() {
       state = 'over';
       overAt = performance.now();
-      if (score > best) { best = score; saveBest(best); }
+      stopRoll();
+      const newBest = score > best;
+      if (newBest) { best = score; saveBest(best); }
+      if (newBest) sfx.best(); else sfx.over();
       document.getElementById('over-score').textContent = score;
       document.getElementById('over-best').textContent = best;
       document.getElementById('over-reason').textContent =
@@ -529,6 +680,7 @@
       state = 'dying';
       deathT = 0;
       ballHidden = true;
+      sfx.hit();
       timeScale = 0.3;
       shake = 1;
       const shades = ['#00ff88', '#aaffdd', '#ffffff', '#66ffbb'];
@@ -546,6 +698,7 @@
       deathCause = 'fell';
       state = 'dying';
       deathT = 0;
+      sfx.fall();
     }
 
     // ── Physics ────────────────────────────────────────────
@@ -977,6 +1130,7 @@
         updateCamera(state === 'playing' || state === 'dying' ? dt : rdt);
         updateParticles(dt);
       }
+      updateRoll();
       render();
       requestAnimationFrame(frame);
     }
