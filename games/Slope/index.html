@@ -235,8 +235,9 @@
       <div class="subtitle">Roll. Dodge. Survive.</div>
       <div class="controls-hint">
         Steer with <kbd>&larr;</kbd> <kbd>&rarr;</kbd> or <kbd>A</kbd> <kbd>D</kbd><br>
-        Touch left / right side on mobile<br>
-        Avoid the red blocks &mdash; don't fall off the edge!<br>
+        Jump with <kbd>Space</kbd> / <kbd>&uarr;</kbd> &mdash; swipe up on mobile<br>
+        Touch left / right side on mobile to steer<br>
+        Avoid the red blocks &mdash; hit the green ramps to fly!<br>
         <kbd>M</kbd> or tap &#9834; to mute
       </div>
       <button class="btn" id="start-btn">Play</button>
@@ -293,6 +294,7 @@
     const VIEW_DIST = 235;
     const V0 = 26;
     const VMAX = 92;
+    const JUMP_V = 20;          // upward launch velocity on jump
     const LANES = [-5, -2.5, 0, 2.5, 5];   // interior grid lines
     const BEST_KEY = 'cassiusbreak-slope-best';
 
@@ -369,6 +371,8 @@
 
     const sfx = {
       go()   { tone(220, 560, 0.18, 'square', 0.06); },
+      jump() { tone(330, 560, 0.12, 'square', 0.06); },
+      ramp() { tone(180, 520, 0.22, 'sawtooth', 0.07); },
       hit()  { tone(300, 40, 0.5, 'sawtooth', 0.13); noiseBurst(0.3, 0.2, 1400); },
       fall() { tone(520, 60, 0.7, 'sine', 0.1); },
       over() { tone(200, 55, 0.45, 'triangle', 0.1); },
@@ -430,7 +434,7 @@
         return;
       }
       const sp = clamp((speed - V0) / (VMAX - V0), 0, 1);
-      rollGain.gain.setTargetAtTime(0.04 + sp * 0.06, t, 0.08);
+      rollGain.gain.setTargetAtTime(0.01 + sp * 0.015, t, 0.08);
       rollOsc.frequency.setTargetAtTime(48 + sp * 70, t, 0.08);
       rollFilter.frequency.setTargetAtTime(260 + sp * 900, t, 0.08);
     }
@@ -480,10 +484,11 @@
     let ball = { x: 0, y: 0, z: 8, vx: 0, vy: 0 };
     let speed = V0, dist = 0, score = 0, spin = 0;
     let best = loadBest();
-    let obstacles = [], holes = [], particles = [];
+    let obstacles = [], holes = [], particles = [], ramps = [];
     let nextSpawnZ = 110;
     let time = 0, timeScale = 1, deathT = 0, overAt = 0;
     let deathCause = '', ballHidden = false, shake = 0;
+    let jumpReq = false, onRamp = false;
     const cam = { x: 0, y: 0, z: 0, pitch: 0.5, roll: 0 };
 
     function difficulty() {
@@ -494,10 +499,11 @@
       resetTerrain();
       ball = { x: 0, y: terrainY(8) + BALL_R, z: 8, vx: 0, vy: 0 };
       speed = V0; dist = 0; score = 0; spin = 0;
-      obstacles = []; holes = []; particles = [];
+      obstacles = []; holes = []; particles = []; ramps = [];
       nextSpawnZ = 110;
       time = 0; timeScale = 1; deathT = 0;
       deathCause = ''; ballHidden = false; shake = 0;
+      jumpReq = false; onRamp = false;
       cam.z = ball.z - 13;
       cam.x = 0;
       cam.y = terrainY(cam.z + 4) + 6.8;
@@ -547,12 +553,20 @@
         const w = lerp(0.5, 0.68, d) * TRACK_W;
         if (Math.random() < 0.5) pushSpan(-HALF_W, -HALF_W + w, z, 3.4);
         else pushSpan(HALF_W - w, HALF_W, z, 3.4);
-      } else if (r < 0.82) {
+      } else if (r < 0.71) {
         // hole in the floor
         const w = TRACK_W * rand(0.42, 0.6);
         const x0 = rand(-HALF_W, HALF_W - w);
         holes.push({ x0, x1: x0 + w, z0: z, z1: z + rand(8, 14) });
         adv *= 0.9;
+      } else if (r < 0.85) {
+        // launch ramp — ride up and fly over what's ahead
+        const w = TRACK_W * rand(0.42, 0.7);
+        const x0 = rand(-HALF_W, HALF_W - w);
+        const len = rand(9, 15);
+        const h = rand(2.2, 3.4);
+        ramps.push({ x0, x1: x0 + w, z0: z, z1: z + len, h });
+        adv = len + lerp(42, 24, d);
       } else {
         // slalom — three staggered walls
         let side = Math.random() < 0.5 ? -1 : 1;
@@ -576,6 +590,23 @@
       return false;
     }
 
+    // ── Ramps (launch wedges) ──────────────────────────────
+    function rampAt(x, z) {
+      for (let i = 0; i < ramps.length; i++) {
+        const r = ramps[i];
+        if (z >= r.z0 && z <= r.z1 && x > r.x0 && x < r.x1) return r;
+      }
+      return null;
+    }
+    function rampHeightAt(x, z) {
+      const r = rampAt(x, z);
+      return r ? r.h * clamp((z - r.z0) / (r.z1 - r.z0), 0, 1) : 0;
+    }
+    function rampSlopeAt(x, z) {
+      const r = rampAt(x, z);
+      return r ? r.h / (r.z1 - r.z0) : 0;
+    }
+
     // ── Input ──────────────────────────────────────────────
     const keys = { l: false, r: false };
     let touchDir = 0;
@@ -585,12 +616,18 @@
       return k !== 0 ? k : touchDir;
     }
 
+    function requestJump() {
+      if (state === 'playing' && !paused) jumpReq = true;
+    }
+
     window.addEventListener('keydown', e => {
       if (e.code === 'ArrowLeft' || e.code === 'KeyA') { keys.l = true; e.preventDefault(); }
       else if (e.code === 'ArrowRight' || e.code === 'KeyD') { keys.r = true; e.preventDefault(); }
+      else if (e.code === 'ArrowUp' || e.code === 'KeyW') { e.preventDefault(); requestJump(); }
       else if (e.code === 'Space' || e.code === 'Enter') {
         e.preventDefault();
         if (state === 'menu') start();
+        else if (state === 'playing') requestJump();
         else if (state === 'over' && performance.now() - overAt > 300) start();
       } else if (e.code === 'KeyR') {
         if (state === 'over') start();
@@ -606,13 +643,25 @@
       else if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.r = false;
     });
 
+    let touchStartY = 0, swiped = false;
+
     function readTouch(e) {
       if (e.touches.length === 0) { touchDir = 0; return; }
       const t = e.touches[e.touches.length - 1];
       touchDir = t.clientX < Wpx / 2 ? -1 : 1;
     }
-    canvas.addEventListener('touchstart', e => { e.preventDefault(); readTouch(e); }, { passive: false });
-    canvas.addEventListener('touchmove', e => { e.preventDefault(); readTouch(e); }, { passive: false });
+    canvas.addEventListener('touchstart', e => {
+      e.preventDefault();
+      touchStartY = e.touches[e.touches.length - 1].clientY;
+      swiped = false;
+      readTouch(e);
+    }, { passive: false });
+    canvas.addEventListener('touchmove', e => {
+      e.preventDefault();
+      readTouch(e);
+      const t = e.touches[e.touches.length - 1];
+      if (!swiped && touchStartY - t.clientY > 50) { swiped = true; requestJump(); }  // swipe up to jump
+    }, { passive: false });
     canvas.addEventListener('touchend', e => { e.preventDefault(); readTouch(e); }, { passive: false });
     canvas.addEventListener('touchcancel', e => { e.preventDefault(); touchDir = 0; }, { passive: false });
 
@@ -712,13 +761,22 @@
       dist += speed * h;
       spin += speed * h / BALL_R;
 
-      const gY = terrainY(ball.z) + BALL_R;
+      const rs = rampSlopeAt(ball.x, ball.z);
+      const gY = terrainY(ball.z) + rampHeightAt(ball.x, ball.z) + BALL_R;
       const supported = Math.abs(ball.x) <= HALF_W - 0.05 && !inHole(ball.x, ball.z);
+      const onGround = ball.y <= gY + 0.08;
 
-      if (ball.y <= gY + 0.08) {
+      // play a whoosh the moment the ball rolls onto a ramp
+      const nowOnRamp = onGround && supported && rs > 0;
+      if (nowOnRamp && !onRamp) sfx.ramp();
+      onRamp = nowOnRamp;
+
+      if (onGround) {
         if (supported) {
           if (ball.y < gY) ball.y = gY;
-          ball.vy = terrainSlope(ball.z) * speed;
+          // on a ramp, follow its upward incline so the ball launches off the top
+          ball.vy = (rs > 0 ? rs : terrainSlope(ball.z)) * speed;
+          if (jumpReq) { ball.vy = JUMP_V; jumpReq = false; sfx.jump(); }
         } else {
           startFall();
           return;
@@ -748,6 +806,7 @@
         while (nextSpawnZ < ball.z + 280) spawnWave();
         obstacles = obstacles.filter(o => o.zc + o.hz > ball.z - 26);
         holes = holes.filter(hl => hl.z1 > ball.z - 26);
+        ramps = ramps.filter(rp => rp.z1 > ball.z - 26);
         score = Math.floor(dist * 0.5);
       } else if (state === 'dying') {
         deathT += rdt;
@@ -985,6 +1044,57 @@
           ctx.lineWidth = 1.2;
           ctx.stroke();
         }
+      }
+
+      // ramps (green launch wedges)
+      const rsorted = ramps.slice().sort((a, b) => b.z1 - a.z1);
+      for (let i = 0; i < rsorted.length; i++) {
+        const rp = rsorted[i];
+        if (rp.z1 < cam.z + 1 || rp.z0 > cam.z + VIEW_DIST) continue;
+        const steps = 6;
+        for (let k = 0; k < steps; k++) {
+          const za = lerp(rp.z0, rp.z1, k / steps), zb = lerp(rp.z0, rp.z1, (k + 1) / steps);
+          const ya = terrainY(za) + rp.h * (k / steps);
+          const yb = terrainY(zb) + rp.h * ((k + 1) / steps);
+          const a0 = project(rp.x0, ya, za), a1 = project(rp.x1, ya, za);
+          const b1 = project(rp.x1, yb, zb), b0 = project(rp.x0, yb, zb);
+          if (!a0 || !a1 || !b0 || !b1) continue;
+          const fg = fogAt(za);
+          ctx.globalAlpha = clamp(1 - fg * 0.9, 0.05, 1);
+          // inclined top surface
+          ctx.fillStyle = mixCol([0, 120, 72], [0, 60, 40], fg);
+          ctx.beginPath();
+          ctx.moveTo(a0.x, a0.y); ctx.lineTo(a1.x, a1.y);
+          ctx.lineTo(b1.x, b1.y); ctx.lineTo(b0.x, b0.y);
+          ctx.closePath(); ctx.fill();
+          // visible side wall
+          let sx = null;
+          if (cam.x < rp.x0) sx = rp.x0; else if (cam.x > rp.x1) sx = rp.x1;
+          if (sx !== null) {
+            const ga = terrainY(za), gb = terrainY(zb);
+            const s0 = project(sx, ga, za), s1 = project(sx, gb, zb);
+            const s2 = project(sx, yb, zb), s3 = project(sx, ya, za);
+            if (s0 && s1 && s2 && s3) {
+              ctx.fillStyle = 'rgba(0,70,42,0.92)';
+              ctx.beginPath();
+              ctx.moveTo(s0.x, s0.y); ctx.lineTo(s1.x, s1.y);
+              ctx.lineTo(s2.x, s2.y); ctx.lineTo(s3.x, s3.y);
+              ctx.closePath(); ctx.fill();
+            }
+          }
+        }
+        // neon lip along the launch edge
+        const lipY = terrainY(rp.z1) + rp.h;
+        const e0 = project(rp.x0, lipY, rp.z1), e1 = project(rp.x1, lipY, rp.z1);
+        if (e0 && e1) {
+          ctx.globalAlpha = clamp(1 - fogAt(rp.z1) * 0.9, 0.05, 1);
+          ctx.strokeStyle = COL.edge;
+          ctx.lineWidth = 2.4;
+          ctx.beginPath();
+          ctx.moveTo(e0.x, e0.y); ctx.lineTo(e1.x, e1.y);
+          ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
       }
 
       // obstacles (far → near)
