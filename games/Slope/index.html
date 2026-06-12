@@ -294,8 +294,9 @@
     const VIEW_DIST = 235;
     const V0 = 26;
     const VMAX = 92;
-    const JUMP_V = 17;          // upward launch velocity on jump
-    const LAUNCH_MAX = 20;      // cap on ramp launch velocity (keeps air time sane)
+    const JUMP_V = 20;          // jump launch velocity, measured relative to the ground
+    const RAMP_LAUNCH = 18;     // ramp-lip launch velocity, measured relative to the ground
+    const LAUNCH_MAX = 10;      // cap on how fast the ball climbs a ramp's surface
     const LANES = [-5, -2.5, 0, 2.5, 5];   // interior grid lines
     const BEST_KEY = 'cassiusbreak-slope-best';
 
@@ -489,7 +490,7 @@
     let nextSpawnZ = 110;
     let time = 0, timeScale = 1, deathT = 0, overAt = 0;
     let deathCause = '', ballHidden = false, shake = 0;
-    let jumpReq = false, onRamp = false;
+    let jumpReq = false, onRamp = false, canJump = true;
     const cam = { x: 0, y: 0, z: 0, pitch: 0.5, roll: 0 };
 
     function difficulty() {
@@ -504,7 +505,7 @@
       nextSpawnZ = 110;
       time = 0; timeScale = 1; deathT = 0;
       deathCause = ''; ballHidden = false; shake = 0;
-      jumpReq = false; onRamp = false;
+      jumpReq = false; onRamp = false; canJump = true;
       cam.z = ball.z - 13;
       cam.x = 0;
       cam.y = terrainY(cam.z + 4) + 6.8;
@@ -624,11 +625,11 @@
     window.addEventListener('keydown', e => {
       if (e.code === 'ArrowLeft' || e.code === 'KeyA') { keys.l = true; e.preventDefault(); }
       else if (e.code === 'ArrowRight' || e.code === 'KeyD') { keys.r = true; e.preventDefault(); }
-      else if (e.code === 'ArrowUp' || e.code === 'KeyW') { e.preventDefault(); requestJump(); }
+      else if (e.code === 'ArrowUp' || e.code === 'KeyW') { e.preventDefault(); if (!e.repeat) requestJump(); }
       else if (e.code === 'Space' || e.code === 'Enter') {
         e.preventDefault();
         if (state === 'menu') start();
-        else if (state === 'playing') requestJump();
+        else if (state === 'playing') { if (!e.repeat) requestJump(); }
         else if (state === 'over' && performance.now() - overAt > 300) start();
       } else if (e.code === 'KeyR') {
         if (state === 'over') start();
@@ -766,6 +767,13 @@
       const gY = terrainY(ball.z) + rampHeightAt(ball.x, ball.z) + BALL_R;
       const supported = Math.abs(ball.x) <= HALF_W - 0.05 && !inHole(ball.x, ball.z);
       const onGround = ball.y <= gY + 0.08;
+      // How fast the ground itself is dropping away beneath us right now. Every launch
+      // is measured RELATIVE to this, so a jump or ramp lifts the ball the same height
+      // above the track at any speed. (Using an absolute launch velocity is what made
+      // jumps grow as speed climbed — the accelerating downhill raced out from under a
+      // fixed upward velocity and flung the ball into space.)
+      const groundVy = terrainSlope(ball.z) * speed;
+      const wasOnRamp = onRamp;
 
       // play a whoosh the moment the ball rolls onto a ramp
       const nowOnRamp = onGround && supported && rs > 0;
@@ -775,13 +783,19 @@
       if (onGround) {
         if (supported) {
           if (ball.y < gY) ball.y = gY;
-          // on a ramp, follow its incline but cap the launch so air time stays reasonable
-          ball.vy = rs > 0 ? Math.min(rs * speed, LAUNCH_MAX) : terrainSlope(ball.z) * speed;
-          if (jumpReq) { ball.vy = JUMP_V; jumpReq = false; sfx.jump(); }
+          // glue to the slope, or climb a ramp's incline (capped so the climb stays sane)
+          ball.vy = rs > 0 ? groundVy + Math.min(rs * speed, LAUNCH_MAX) : groundVy;
+          // one jump per ground contact: a constant upward boost above the ground
+          if (jumpReq && canJump) { ball.vy = groundVy + JUMP_V; canJump = false; sfx.jump(); }
+          jumpReq = false;
         } else {
           startFall();
           return;
         }
+      } else {
+        // just rolled off a ramp lip → constant upward kick (keep a stronger jump if queued)
+        if (wasOnRamp) ball.vy = Math.max(ball.vy, groundVy + RAMP_LAUNCH);
+        canJump = true;   // airborne — re-arm for the next landing
       }
 
       // obstacle collisions
