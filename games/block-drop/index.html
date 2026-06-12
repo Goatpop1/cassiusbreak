@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Tetris — CassiusBreak</title>
+  <title>Block Drop — CassiusBreak</title>
   <style>
     *, *::before, *::after {
       box-sizing: border-box;
@@ -246,7 +246,7 @@
   <!-- START SCREEN -->
   <div class="overlay" id="start-screen">
     <div class="panel">
-      <div class="title">Tetris</div>
+      <div class="title">Block Drop</div>
       <div class="controls">
         <span class="touch-hide"><b>&larr;</b> <b>&rarr;</b> move &nbsp;&middot;&nbsp; <b>&uarr;</b> rotate &nbsp;&middot;&nbsp; <b>&darr;</b> soft drop<br>
         <b>SPACE</b> hard drop &nbsp;&middot;&nbsp; <b>P</b> pause &nbsp;&middot;&nbsp; <b>M</b> sound<br></span>
@@ -380,8 +380,8 @@
       const lockFlashes = [];
       let stars = [];
 
-      const HS_KEY = 'cassiusbreak-tetris-best';
-      const MUTE_KEY = 'cassiusbreak-tetris-muted';
+      const HS_KEY = 'cassiusbreak-block-drop-best';
+      const MUTE_KEY = 'cassiusbreak-block-drop-muted';
 
       function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
       function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
@@ -548,7 +548,7 @@
           const f = [523, 659, 784, 988];
           for (let i = 0; i <= Math.min(n, 3); i++) tone(f[i], f[i], 0.09, 'square', 0.06, i * 0.07);
         },
-        tetris() {
+        blockDrop() {
           [523, 659, 784, 1046, 1318].forEach((q, i) => tone(q, q, 0.12, 'square', 0.07, i * 0.07));
           noiseBurst(0.2, 0.1, 2200);
         },
@@ -717,9 +717,9 @@
         });
 
         if (nCleared === 4) {
-          announce = { text: 'TETRIS!', sub: '+' + pts, color: '#ffe600', t: 1.1, dur: 1.1 };
+          announce = { text: 'BLOCK DROP!', sub: '+' + pts, color: '#ffe600', t: 1.1, dur: 1.1 };
           hitstop = 0.06;
-          sfx.tetris();
+          sfx.blockDrop();
         } else {
           sfx.clear(nCleared);
         }
@@ -1152,7 +1152,7 @@
         ctx.shadowColor = '#00ff88';
         ctx.shadowBlur = 14;
         ctx.fillStyle = '#00ff88';
-        ctx.fillText('T E T R I S', bx + boardW / 2, by - 16);
+        ctx.fillText('B L O C K  D R O P', bx + boardW / 2, by - 16);
         ctx.shadowBlur = 0;
 
         const rx = W - 28;
