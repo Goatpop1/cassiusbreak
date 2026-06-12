@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Tetris — CassiusBreak</title>
   <style>
     *, *::before, *::after {
@@ -17,12 +17,19 @@
       background: #1a0033;
       color: #ffffff;
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      /* stop mobile scroll / pull-to-refresh / double-tap zoom over the game */
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-text-size-adjust: 100%;
     }
 
     #game {
       display: block;
       position: fixed;
       inset: 0;
+      touch-action: none;
     }
 
     .corner-link {
@@ -221,6 +228,13 @@
       color: #00ff88;
       text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
     }
+
+    /* mobile-only helper text — hidden on devices with a real pointer */
+    .touch-only { display: none; }
+    @media (hover: none) and (pointer: coarse) {
+      .touch-only { display: inline; }
+      .touch-hide { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -234,11 +248,12 @@
     <div class="panel">
       <div class="title">Tetris</div>
       <div class="controls">
-        <b>&larr;</b> <b>&rarr;</b> move &nbsp;&middot;&nbsp; <b>&uarr;</b> rotate &nbsp;&middot;&nbsp; <b>&darr;</b> soft drop<br>
-        <b>SPACE</b> hard drop &nbsp;&middot;&nbsp; <b>P</b> pause &nbsp;&middot;&nbsp; <b>M</b> sound<br>
+        <span class="touch-hide"><b>&larr;</b> <b>&rarr;</b> move &nbsp;&middot;&nbsp; <b>&uarr;</b> rotate &nbsp;&middot;&nbsp; <b>&darr;</b> soft drop<br>
+        <b>SPACE</b> hard drop &nbsp;&middot;&nbsp; <b>P</b> pause &nbsp;&middot;&nbsp; <b>M</b> sound<br></span>
+        <span class="touch-only"><b>TAP</b> rotate &nbsp;&middot;&nbsp; <b>DRAG</b> move &nbsp;&middot;&nbsp; <b>FLICK &darr;</b> hard drop<br></span>
         Clear lines to score &mdash; the game speeds up every 5 lines.
       </div>
-      <div class="pulse">PRESS SPACE TO START</div>
+      <div class="pulse"><span class="touch-hide">PRESS SPACE TO START</span><span class="touch-only">TAP TO START</span></div>
     </div>
   </div>
 
@@ -246,7 +261,7 @@
   <div class="overlay hidden" id="pause-screen">
     <div class="panel">
       <div class="title small">Paused</div>
-      <div class="hint">press P to resume</div>
+      <div class="hint"><span class="touch-hide">press P to resume</span><span class="touch-only">tap to resume</span></div>
     </div>
   </div>
 
@@ -261,7 +276,7 @@
         <span>LINES <b id="go-lines">0</b></span>
       </div>
       <button id="restart-btn">Restart</button>
-      <div class="hint">or press SPACE</div>
+      <div class="hint"><span class="touch-hide">or press SPACE</span><span class="touch-only">or tap anywhere</span></div>
       <a class="back-link" href="/index.html">&larr; Back to CassiusBreak</a>
     </div>
   </div>
@@ -1351,6 +1366,73 @@
       window.addEventListener('blur', () => {
         if (state === PLAYING || state === CLEARING) setPaused(true);
       });
+
+      /* ── TOUCH (mobile) ─────────────────────────────────── */
+      // Gestures while playing:
+      //   • tap                → rotate
+      //   • drag left / right  → move one cell per finger-step
+      //   • drag down (slow)   → soft drop
+      //   • flick down (fast)  → hard drop
+      // Taps on the menus start / restart the game.
+      function isUiTarget(t) { return t && t.closest && t.closest('a, button'); }
+      function touchPlaying() { return state === PLAYING && !paused; }
+
+      let touch = null;
+
+      window.addEventListener('touchstart', e => {
+        if (isUiTarget(e.target)) return;   // links / restart button keep their own behaviour
+        ensureAudio();
+        if (state === START) { resetGame(); e.preventDefault(); return; }
+        if (state === GAMEOVER) { if (goLock <= 0) resetGame(); e.preventDefault(); return; }
+        if (paused && (state === PLAYING || state === CLEARING)) { setPaused(false); e.preventDefault(); return; }
+        if (!touchPlaying()) { e.preventDefault(); return; }
+        const t = e.changedTouches[0];
+        touch = { sx: t.clientX, sy: t.clientY, x: t.clientX, y: t.clientY, t0: performance.now(), moved: 0 };
+        e.preventDefault();
+      }, { passive: false });
+
+      window.addEventListener('touchmove', e => {
+        if (!touch || !touchPlaying()) return;
+        const t = e.changedTouches[0];
+        const unit = Math.max(20, CELL);   // finger travel needed to step one cell
+
+        let dx = t.clientX - touch.x;
+        while (Math.abs(dx) >= unit) {
+          const dir = dx > 0 ? 1 : -1;
+          tryMove(dir);
+          touch.x += dir * unit;
+          touch.moved += unit;
+          dx = t.clientX - touch.x;
+        }
+
+        let dy = t.clientY - touch.y;
+        while (dy >= unit) {                // downward drag = soft drop
+          if (cur && !collide(cur.m, cur.x, cur.y + 1)) { cur.y++; gravT = 0; }
+          touch.y += unit;
+          touch.moved += unit;
+          dy = t.clientY - touch.y;
+        }
+        e.preventDefault();
+      }, { passive: false });
+
+      window.addEventListener('touchend', e => {
+        if (!touch) return;
+        if (touchPlaying()) {
+          const t = e.changedTouches[0];
+          const dt = performance.now() - touch.t0;
+          const totalDx = t.clientX - touch.sx;
+          const totalDy = t.clientY - touch.sy;
+          if (touch.moved < 14 && Math.abs(totalDx) < 14 && Math.abs(totalDy) < 14 && dt < 250) {
+            tryRotate();                                                   // tap = rotate
+          } else if (totalDy > 50 && totalDy > Math.abs(totalDx) && dt < 250) {
+            hardDrop();                                                    // fast downward flick = hard drop
+          }
+        }
+        touch = null;
+        e.preventDefault();
+      }, { passive: false });
+
+      window.addEventListener('touchcancel', () => { touch = null; });
 
       /* ── BOOT ───────────────────────────────────────────── */
       resetBoard();

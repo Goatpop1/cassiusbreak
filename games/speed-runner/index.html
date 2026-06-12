@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Dino Run — CassiusBreak</title>
   <style>
     *, *::before, *::after {
@@ -17,12 +17,19 @@
       background: #1a0033;
       color: #ffffff;
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      /* stop mobile scroll / pull-to-refresh / double-tap zoom over the game */
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-text-size-adjust: 100%;
     }
 
     #game {
       display: block;
       position: fixed;
       inset: 0;
+      touch-action: none;
     }
 
     .corner-link {
@@ -197,6 +204,13 @@
       color: #00ff88;
       text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
     }
+
+    /* mobile-only helper text — hidden on devices with a real pointer */
+    .touch-only { display: none; }
+    @media (hover: none) and (pointer: coarse) {
+      .touch-only { display: inline; }
+      .touch-hide { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -210,10 +224,11 @@
     <div class="panel">
       <div class="title">Dino Run</div>
       <div class="controls">
-        <b>SPACE</b> jump &nbsp;&middot;&nbsp; <b>SPACE &times;2</b> double jump &nbsp;&middot;&nbsp; <b>M</b> sound<br>
+        <span class="touch-hide"><b>SPACE</b> jump &nbsp;&middot;&nbsp; <b>SPACE &times;2</b> double jump &nbsp;&middot;&nbsp; <b>M</b> sound<br></span>
+        <span class="touch-only"><b>TAP</b> jump &nbsp;&middot;&nbsp; <b>TAP &times;2</b> double jump<br></span>
         Survive as long as you can &mdash; the speed rises every 10 seconds.
       </div>
-      <div class="pulse">PRESS SPACE TO START</div>
+      <div class="pulse"><span class="touch-hide">PRESS SPACE TO START</span><span class="touch-only">TAP TO START</span></div>
     </div>
   </div>
 
@@ -225,7 +240,7 @@
       <div class="big-score" id="go-score">000</div>
       <div class="best-line" id="go-best">BEST 000</div>
       <button id="restart-btn">Restart</button>
-      <div class="hint">or press SPACE</div>
+      <div class="hint"><span class="touch-hide">or press SPACE</span><span class="touch-only">or tap anywhere</span></div>
       <a class="back-link" href="/index.html">&larr; Back to CassiusBreak</a>
     </div>
   </div>
@@ -970,6 +985,26 @@
           player.vy = JUMP_CUT;
         }
       });
+
+      /* ── TOUCH (mobile) ─────────────────────────────────── */
+      // A tap anywhere acts like SPACE: start / jump / double jump / restart.
+      // Lifting the finger early cuts the jump short, mirroring keyup.
+      function isUiTarget(t) { return t && t.closest && t.closest('a, button'); }
+
+      window.addEventListener('touchstart', e => {
+        if (isUiTarget(e.target)) return;   // let links / the restart button work normally
+        e.preventDefault();
+        ensureAudio();
+        handleSpace();
+      }, { passive: false });
+
+      window.addEventListener('touchend', e => {
+        if (isUiTarget(e.target)) return;
+        e.preventDefault();
+        if (state === PLAYING && !player.onGround && player.vy < JUMP_CUT) {
+          player.vy = JUMP_CUT;
+        }
+      }, { passive: false });
 
       /* ── BOOT ───────────────────────────────────────────── */
       resize();
