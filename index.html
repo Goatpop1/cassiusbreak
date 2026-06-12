@@ -3,379 +3,861 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CassiusBreak - Free Online Games</title>
+  <title>CassiusBreak — Free Unblocked Games You Can Play at School</title>
+  <meta name="description" content="Play free unblocked games at school — no downloads, no sign-up. Featuring CassiusBreak Originals: Dino Run, Block Drop and Slope. Works on school networks and phones.">
+  <meta name="theme-color" content="#0a0a12">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230a0a12'/><text x='50' y='72' font-size='64' font-family='Arial' font-weight='900' text-anchor='middle' fill='%2338bdf8'>C</text></svg>">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="CassiusBreak — Free Unblocked Games">
+  <meta property="og:description" content="Free unblocked games that work at school. No downloads, no sign-up.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cassiusbreak.com">
+
   <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #1a0033;
-      --bg-dark: #0d001a;
-      --accent: #00ff88;
-      --accent-glow: rgba(0, 255, 136, 0.4);
-      --text: #ffffff;
-      --text-muted: #aaaacc;
-      --sidebar-width: 250px;
-      --header-height: 64px;
+      --bg:        #0a0a12;
+      --bg-2:      #0f0f1c;
+      --card-solid:#141426;
+      --line:      rgba(255,255,255,0.07);
+      --line-2:    rgba(255,255,255,0.12);
+      --blue:      #38bdf8;
+      --cyan:      #22d3ee;
+      --violet:    #8b5cf6;
+      --pink:      #d946ef;
+      --text:      #f5f7ff;
+      --muted:     #9aa0bf;
+      --muted-2:   #6b7194;
+      --grad:      linear-gradient(105deg, #22d3ee 0%, #38bdf8 38%, #8b5cf6 100%);
+      --grad-soft: linear-gradient(135deg, rgba(56,189,248,0.18), rgba(139,92,246,0.18));
+      --header-h:  66px;
+      --radius:    16px;
+      --shadow-glow: 0 12px 40px rgba(56,189,248,0.18), 0 4px 16px rgba(139,92,246,0.14);
     }
 
-    html, body {
-      height: 100%;
+    html { scroll-behavior: smooth; overflow-x: hidden; }
+
+    body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    }
-
-    /* ── HEADER ─────────────────────────────────────────── */
-    header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: var(--header-height);
-      background: var(--bg-dark);
-      border-bottom: 2px solid var(--accent);
-      display: flex;
-      align-items: center;
-      padding: 0 24px;
-      z-index: 100;
-      box-shadow: 0 2px 20px var(--accent-glow);
-    }
-
-    .logo {
-      font-size: 1.75rem;
-      font-weight: 900;
-      color: var(--accent);
-      letter-spacing: 2px;
-      text-shadow: 0 0 16px var(--accent), 0 0 32px rgba(0, 255, 136, 0.3);
-      text-transform: uppercase;
-    }
-
-    .logo span {
-      color: #ffffff;
-    }
-
-    /* ── LAYOUT ──────────────────────────────────────────── */
-    .layout {
-      display: flex;
-      padding-top: var(--header-height);
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Inter', Roboto, Arial, sans-serif;
       min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
 
-    /* ── SIDEBAR ─────────────────────────────────────────── */
-    .sidebar {
-      width: var(--sidebar-width);
-      min-width: var(--sidebar-width);
-      background: var(--bg-dark);
-      border-right: 1px solid rgba(0, 255, 136, 0.2);
+    /* ambient background glow */
+    body::before {
+      content: '';
       position: fixed;
-      top: var(--header-height);
-      bottom: 0;
-      left: 0;
-      overflow-y: auto;
-      padding: 28px 0;
-    }
-
-    .sidebar-title {
-      color: var(--accent);
-      font-size: 0.7rem;
-      font-weight: 800;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      padding: 0 20px 16px;
-      border-bottom: 1px solid rgba(0, 255, 136, 0.15);
-      margin-bottom: 8px;
-    }
-
-    .sidebar nav a {
-      display: block;
-      padding: 12px 20px;
-      color: #ff8c00;
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 700;
-      transition: color 0.2s, background 0.2s, padding-left 0.2s;
-      border-left: 3px solid transparent;
-    }
-
-    .sidebar nav a:hover {
-      color: var(--accent);
-      background: rgba(0, 255, 136, 0.06);
-      padding-left: 26px;
-      border-left-color: var(--accent);
-      text-shadow: 0 0 8px var(--accent-glow);
-    }
-
-    /* ── MAIN CONTENT ────────────────────────────────────── */
-    .main {
-      margin-left: var(--sidebar-width);
-      flex: 1;
-      padding: 32px 28px 60px;
-      max-width: 1200px;
-    }
-
-    /* ── SEARCH ──────────────────────────────────────────── */
-    .search-wrap {
-      margin-bottom: 36px;
-      position: relative;
-    }
-
-    .search-wrap::before {
-      content: '⌕';
-      position: absolute;
-      left: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-muted);
-      font-size: 1.2rem;
+      inset: 0;
+      z-index: -1;
+      background:
+        radial-gradient(900px 600px at 12% -8%, rgba(56,189,248,0.16), transparent 60%),
+        radial-gradient(800px 600px at 92% 4%, rgba(139,92,246,0.16), transparent 58%),
+        radial-gradient(700px 500px at 50% 110%, rgba(217,70,239,0.08), transparent 60%);
       pointer-events: none;
     }
 
-    #search {
+    a { text-decoration: none; color: inherit; }
+
+    .wrap { max-width: 1240px; margin: 0 auto; padding: 0 22px; }
+
+    /* ───────────────────── HEADER ───────────────────── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: var(--header-h);
+      background: rgba(10,10,18,0.72);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+    }
+    .header-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      height: 100%;
+      padding: 0 22px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .logo {
+      font-size: 1.45rem;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      flex-shrink: 0;
+    }
+    .logo .mark {
+      width: 32px; height: 32px;
+      border-radius: 9px;
+      background: var(--grad);
+      display: grid;
+      place-items: center;
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: #06121e;
+      box-shadow: 0 4px 16px rgba(56,189,248,0.45);
+    }
+    .logo b { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .logo span { color: var(--text); }
+
+    .header-search {
+      flex: 1;
+      max-width: 440px;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .header-search svg { position: absolute; left: 14px; width: 17px; height: 17px; color: var(--muted-2); pointer-events: none; }
+    .header-search input {
       width: 100%;
-      max-width: 500px;
-      padding: 14px 18px 14px 44px;
-      background: var(--bg-dark);
-      border: 1px solid rgba(0, 255, 136, 0.3);
-      border-radius: 10px;
+      height: 42px;
+      padding: 0 14px 0 40px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line-2);
+      border-radius: 11px;
       color: var(--text);
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      transition: border-color .18s, box-shadow .18s, background .18s;
+    }
+    .header-search input::placeholder { color: var(--muted-2); }
+    .header-search input:focus {
+      border-color: var(--blue);
+      background: rgba(56,189,248,0.06);
+      box-shadow: 0 0 0 3px rgba(56,189,248,0.18);
     }
 
-    #search::placeholder {
-      color: var(--text-muted);
+    .header-cta {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
     }
-
-    #search:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-glow);
+    .pill-link {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--muted);
+      padding: 9px 14px;
+      border-radius: 10px;
+      transition: color .15s, background .15s;
     }
+    .pill-link:hover { color: var(--text); background: rgba(255,255,255,0.05); }
 
-    /* ── SECTION HEADING ─────────────────────────────────── */
-    .section-heading {
-      font-size: 0.7rem;
-      font-weight: 800;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      color: var(--accent);
+    /* ───────────────────── HERO ───────────────────── */
+    .hero {
+      position: relative;
+      padding: 64px 0 30px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--blue);
+      background: rgba(56,189,248,0.09);
+      border: 1px solid rgba(56,189,248,0.28);
+      padding: 7px 15px;
+      border-radius: 999px;
+      margin-bottom: 24px;
+    }
+    .hero-badge .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #34f5a0;
+      box-shadow: 0 0 0 0 rgba(52,245,160,0.6);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(52,245,160,0.55); }
+      70% { box-shadow: 0 0 0 7px rgba(52,245,160,0); }
+      100% { box-shadow: 0 0 0 0 rgba(52,245,160,0); }
+    }
+    .hero h1 {
+      font-size: clamp(1.9rem, 5.5vw, 4.1rem);
+      font-weight: 900;
+      line-height: 1.04;
+      letter-spacing: -1.5px;
       margin-bottom: 20px;
+      overflow-wrap: break-word;
+    }
+    .hero h1 .grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .hero p.sub {
+      font-size: clamp(1rem, 2.2vw, 1.2rem);
+      color: var(--muted);
+      max-width: 620px;
+      margin: 0 auto 30px;
+      line-height: 1.6;
     }
 
-    /* ── GAMES GRID ──────────────────────────────────────── */
+    .hero-search {
+      max-width: 560px;
+      margin: 0 auto 22px;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .hero-search svg { position: absolute; left: 20px; width: 20px; height: 20px; color: var(--muted-2); pointer-events: none; }
+    .hero-search input {
+      width: 100%;
+      height: 58px;
+      padding: 0 18px 0 52px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--line-2);
+      border-radius: 15px;
+      color: var(--text);
+      font-size: 1.05rem;
+      outline: none;
+      transition: border-color .18s, box-shadow .18s, background .18s;
+    }
+    .hero-search input::placeholder { color: var(--muted-2); }
+    .hero-search input:focus {
+      border-color: var(--blue);
+      background: rgba(56,189,248,0.06);
+      box-shadow: 0 0 0 4px rgba(56,189,248,0.16);
+    }
+
+    .trust-row {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px 22px;
+      color: var(--muted);
+      font-size: 0.86rem;
+      font-weight: 600;
+    }
+    .trust-row span { display: inline-flex; align-items: center; gap: 7px; }
+    .trust-row svg { width: 16px; height: 16px; color: #34f5a0; }
+
+    /* ───────────────────── SECTION HEADINGS ───────────────────── */
+    section { padding: 26px 0; }
+    .sec-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+    .sec-head .titles { display: flex; flex-direction: column; gap: 6px; }
+    .eyebrow {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      background: var(--grad);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .sec-head h2 {
+      font-size: clamp(1.5rem, 3.5vw, 2rem);
+      font-weight: 900;
+      letter-spacing: -0.8px;
+    }
+    .sec-head p { color: var(--muted); font-size: 0.92rem; max-width: 460px; }
+
+    /* ───────────────────── ORIGINALS ───────────────────── */
+    .originals-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+    .orig-card {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      background: var(--card-solid);
+      border: 1px solid var(--line-2);
+      display: flex;
+      flex-direction: column;
+      transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s, border-color .25s;
+      isolation: isolate;
+    }
+    .orig-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      padding: 1px;
+      border-radius: 20px;
+      background: var(--grad);
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude;
+      opacity: 0;
+      transition: opacity .25s;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .orig-card:hover { transform: translateY(-7px); box-shadow: var(--shadow-glow); }
+    .orig-card:hover::before { opacity: 1; }
+
+    .orig-thumb {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: linear-gradient(135deg, #11111f, #0c0c16);
+    }
+    .orig-thumb img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .4s ease;
+    }
+    .orig-card:hover .orig-thumb img { transform: scale(1.07); }
+    .orig-thumb::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(10,10,18,0.85) 0%, transparent 45%);
+    }
+    .orig-badge {
+      position: absolute;
+      top: 13px; left: 13px;
+      z-index: 3;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.66rem;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #06121e;
+      background: var(--grad);
+      padding: 6px 11px;
+      border-radius: 999px;
+      box-shadow: 0 4px 14px rgba(56,189,248,0.4);
+    }
+    .orig-badge svg { width: 12px; height: 12px; }
+    .orig-cat-tag {
+      position: absolute;
+      top: 13px; right: 13px;
+      z-index: 3;
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--text);
+      background: rgba(10,10,18,0.6);
+      backdrop-filter: blur(6px);
+      border: 1px solid var(--line-2);
+      padding: 5px 11px;
+      border-radius: 999px;
+    }
+    .orig-body {
+      padding: 18px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+    .orig-body h3 { font-size: 1.22rem; font-weight: 800; letter-spacing: -0.4px; }
+    .orig-body p { color: var(--muted); font-size: 0.88rem; line-height: 1.55; flex: 1; }
+    .orig-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
+    .orig-meta { display: flex; align-items: center; gap: 6px; color: var(--muted-2); font-size: 0.78rem; font-weight: 600; }
+    .orig-meta svg { width: 14px; height: 14px; color: #34f5a0; }
+
+    .btn-play {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      color: #06121e;
+      background: var(--grad);
+      padding: 11px 20px;
+      border-radius: 11px;
+      transition: transform .15s, box-shadow .15s, filter .15s;
+      box-shadow: 0 6px 18px rgba(56,189,248,0.3);
+    }
+    .btn-play svg { width: 15px; height: 15px; }
+    .btn-play:hover { transform: translateY(-2px); filter: brightness(1.08); box-shadow: 0 10px 26px rgba(56,189,248,0.42); }
+
+    /* ───────────────────── CATEGORY FILTERS ───────────────────── */
+    .filters {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .chip {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--muted);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line-2);
+      padding: 9px 17px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all .16s;
+      white-space: nowrap;
+    }
+    .chip:hover { color: var(--text); border-color: var(--blue); }
+    .chip.active {
+      color: #06121e;
+      background: var(--grad);
+      border-color: transparent;
+      box-shadow: 0 4px 14px rgba(56,189,248,0.32);
+    }
+
+    /* ───────────────────── GAME GRID ───────────────────── */
     .games-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 20px;
+      gap: 18px;
     }
-
-    /* ── GAME CARD ───────────────────────────────────────── */
-    .card {
-      background: var(--bg-dark);
-      border-radius: 14px;
+    .game-card {
+      position: relative;
+      border-radius: var(--radius);
       overflow: hidden;
-      border: 1px solid rgba(0, 255, 136, 0.15);
-      transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
-      cursor: pointer;
+      background: var(--card-solid);
+      border: 1px solid var(--line);
+      transition: transform .2s, box-shadow .2s, border-color .2s;
     }
-
-    .card:hover {
+    a.game-card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 8px 32px var(--accent-glow), 0 0 0 1px var(--accent);
-      border-color: var(--accent);
+      box-shadow: var(--shadow-glow);
+      border-color: var(--line-2);
     }
-
-    .card-thumb {
-      width: 100%;
+    .gc-thumb {
+      position: relative;
       aspect-ratio: 16 / 10;
-      display: block;
-    }
-
-    .card-body {
-      padding: 14px 16px 16px;
-    }
-
-    .card-title {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 10px;
-      white-space: nowrap;
       overflow: hidden;
-      text-overflow: ellipsis;
+      background: linear-gradient(135deg, #11111f, #0c0c16);
     }
-
-    .play-btn {
-      display: inline-block;
-      padding: 6px 18px;
-      background: transparent;
-      border: 1.5px solid var(--accent);
-      border-radius: 6px;
-      color: var(--accent);
-      font-size: 0.75rem;
-      font-weight: 800;
-      letter-spacing: 2px;
+    .gc-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .35s ease; }
+    a.game-card:hover .gc-thumb img { transform: scale(1.08); }
+    .gc-cat {
+      position: absolute;
+      top: 10px; left: 10px;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
       text-transform: uppercase;
-      text-decoration: none;
-      transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+      color: var(--text);
+      background: rgba(10,10,18,0.62);
+      backdrop-filter: blur(6px);
+      border: 1px solid var(--line-2);
+      padding: 4px 9px;
+      border-radius: 999px;
     }
-
-    .play-btn:hover {
-      background: var(--accent);
-      color: var(--bg-dark);
-      box-shadow: 0 0 12px var(--accent-glow);
+    .gc-orig-flag {
+      position: absolute;
+      top: 10px; right: 10px;
+      font-size: 0.6rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #06121e;
+      background: var(--grad);
+      padding: 4px 9px;
+      border-radius: 999px;
     }
+    .gc-play-overlay {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: rgba(10,10,18,0.45);
+      opacity: 0;
+      transition: opacity .2s;
+    }
+    a.game-card:hover .gc-play-overlay { opacity: 1; }
+    .gc-play-overlay .circle {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: var(--grad);
+      display: grid; place-items: center;
+      box-shadow: 0 8px 24px rgba(56,189,248,0.5);
+      transform: scale(0.8);
+      transition: transform .2s;
+    }
+    a.game-card:hover .gc-play-overlay .circle { transform: scale(1); }
+    .gc-play-overlay svg { width: 20px; height: 20px; color: #06121e; margin-left: 2px; }
+    .gc-body { padding: 12px 14px 14px; }
+    .gc-title { font-size: 0.95rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    /* ── NO RESULTS ──────────────────────────────────────── */
+    /* coming soon variant */
+    .game-card.soon { cursor: default; }
+    .game-card.soon .gc-thumb {
+      display: grid;
+      place-items: center;
+      background:
+        repeating-linear-gradient(45deg, rgba(255,255,255,0.018) 0 12px, transparent 12px 24px),
+        linear-gradient(135deg, #11111f, #0c0c16);
+    }
+    .game-card.soon .gc-thumb .lock {
+      width: 40px; height: 40px;
+      color: var(--muted-2);
+      opacity: 0.8;
+    }
+    .game-card.soon .gc-cat { opacity: 0.85; }
+    .soon-flag {
+      position: absolute;
+      top: 10px; right: 10px;
+      font-size: 0.6rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--violet);
+      background: rgba(139,92,246,0.12);
+      border: 1px solid rgba(139,92,246,0.4);
+      padding: 4px 9px;
+      border-radius: 999px;
+    }
+    .game-card.soon .gc-title { color: var(--muted); }
+
     .no-results {
       grid-column: 1 / -1;
       text-align: center;
-      color: var(--text-muted);
+      color: var(--muted);
       padding: 60px 0;
       font-size: 1rem;
       display: none;
     }
+    .no-results.show { display: block; }
 
-    /* ── FOOTER ──────────────────────────────────────────── */
+    /* ───────────────────── WHY / TRUST BAND ───────────────────── */
+    .why-band {
+      margin-top: 14px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background:
+        radial-gradient(600px 300px at 0% 0%, rgba(56,189,248,0.08), transparent 60%),
+        radial-gradient(600px 300px at 100% 100%, rgba(139,92,246,0.08), transparent 60%),
+        var(--bg-2);
+      padding: 38px 32px;
+    }
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 26px;
+    }
+    .why-item { display: flex; flex-direction: column; gap: 9px; }
+    .why-icon {
+      width: 42px; height: 42px;
+      border-radius: 12px;
+      background: var(--grad-soft);
+      border: 1px solid var(--line-2);
+      display: grid; place-items: center;
+    }
+    .why-icon svg { width: 21px; height: 21px; color: var(--blue); }
+    .why-item h4 { font-size: 1rem; font-weight: 800; }
+    .why-item p { color: var(--muted); font-size: 0.86rem; line-height: 1.5; }
+    .stat-num { font-size: 1.7rem; font-weight: 900; background: var(--grad); -webkit-background-clip:text; background-clip:text; color: transparent; line-height: 1; }
+
+    /* ───────────────────── FOOTER ───────────────────── */
     footer {
-      background: var(--bg-dark);
-      border-top: 1px solid rgba(0, 255, 136, 0.15);
-      text-align: center;
-      padding: 22px;
-      color: var(--text-muted);
-      font-size: 0.82rem;
-      margin-left: var(--sidebar-width);
+      margin-top: 50px;
+      border-top: 1px solid var(--line);
+      background: var(--bg-2);
+    }
+    .footer-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 34px 22px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .footer-left { display: flex; flex-direction: column; gap: 6px; }
+    .footer-left .logo { font-size: 1.1rem; }
+    .footer-left p { color: var(--muted-2); font-size: 0.82rem; }
+    .footer-links { display: flex; gap: 22px; flex-wrap: wrap; }
+    .footer-links a { color: var(--muted); font-size: 0.85rem; font-weight: 600; transition: color .15s; }
+    .footer-links a:hover { color: var(--blue); }
+
+    /* ───────────────────── RESPONSIVE ───────────────────── */
+    @media (max-width: 1000px) {
+      .originals-grid { grid-template-columns: 1fr; }
+      .games-grid { grid-template-columns: repeat(3, 1fr); }
+      .why-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 760px) {
+      .header-search { display: none; }
+      .hero { padding: 44px 0 22px; }
+      .games-grid { grid-template-columns: repeat(2, 1fr); }
+      .sec-head { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .sec-head p { max-width: none; }
+    }
+    @media (max-width: 460px) {
+      .wrap { padding: 0 15px; }
+      .header-inner { padding: 0 15px; }
+      .hero h1 { font-size: 2rem; letter-spacing: -1px; }
+      .why-grid { grid-template-columns: 1fr; }
+      .pill-link.hide-xs { display: none; }
+      .logo span:last-child { font-size: 1.15rem; }
+    }
+    @media (max-width: 360px) {
+      .games-grid { grid-template-columns: 1fr; }
     }
 
-    /* ── RESPONSIVE ──────────────────────────────────────── */
-    @media (max-width: 1100px) {
-      .games-grid {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
-
-    @media (max-width: 768px) {
-      .sidebar {
-        display: none;
-      }
-
-      .main {
-        margin-left: 0;
-        padding: 24px 16px 48px;
-      }
-
-      footer {
-        margin-left: 0;
-      }
-
-      .games-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 440px) {
-      .games-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .logo {
-        font-size: 1.35rem;
-      }
+    /* fade-in on load */
+    .reveal { opacity: 0; transform: translateY(14px); animation: rise .5s forwards; }
+    @keyframes rise { to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { animation: none; opacity: 1; transform: none; }
+      html { scroll-behavior: auto; }
     }
   </style>
 </head>
 <body>
 
-  <!-- HEADER -->
+  <!-- ───── HEADER ───── -->
   <header>
-    <div class="logo">Cassius<span>Break</span></div>
+    <div class="header-inner">
+      <a href="/" class="logo"><span class="mark">C</span><span>Cassius<b>Break</b></span></a>
+
+      <div class="header-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="search-top" type="text" placeholder="Search games…" aria-label="Search games" autocomplete="off">
+      </div>
+
+      <nav class="header-cta">
+        <a href="#originals" class="pill-link hide-xs">Originals</a>
+        <a href="#all-games" class="pill-link">All Games</a>
+      </nav>
+    </div>
   </header>
 
-  <div class="layout">
+  <!-- ───── HERO ───── -->
+  <div class="wrap">
+    <section class="hero">
+      <div class="hero-badge reveal"><span class="dot"></span> Online now · Works on school networks</div>
+      <h1 class="reveal" style="animation-delay:.05s">Free <span class="grad">Unblocked Games</span><br>you can actually play at school</h1>
+      <p class="sub reveal" style="animation-delay:.1s">No downloads. No sign-up. No blocks. Jump straight into fast, fun games on any device — built to load even on slow school Wi-Fi.</p>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-      <div class="sidebar-title">Games</div>
-      <nav>
-        <a href="/game.html?game=speed-runner">Dino Run</a>
-        <a href="/game.html?game=block-drop">Block Drop</a>
-        <a href="/game.html?game=slope">Slope</a>
-      </nav>
-    </aside>
-
-    <!-- MAIN -->
-    <main class="main">
-      <div class="search-wrap">
-        <input
-          id="search"
-          type="text"
-          placeholder="Search games…"
-          aria-label="Search games"
-          autocomplete="off"
-        >
+      <div class="hero-search reveal" style="animation-delay:.15s">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="search-hero" type="text" placeholder="Search for a game…" aria-label="Search games" autocomplete="off">
       </div>
 
-      <div class="section-heading">All Games</div>
-
-      <div class="games-grid" id="games-grid">
-
-        <!-- Dino Run -->
-        <div class="card" data-name="dino run">
-          <img class="card-thumb" src="images/dino-run.png" alt="Dino Run" style="object-fit:cover;">
-          <div class="card-body">
-            <div class="card-title">Dino Run</div>
-            <a class="play-btn" href="/game.html?game=speed-runner">Play</a>
-          </div>
-        </div>
-
-        <!-- Block Drop -->
-        <div class="card" data-name="block drop">
-          <img class="card-thumb" src="images/block-drop.png" alt="Block Drop" style="object-fit:cover;">
-          <div class="card-body">
-            <div class="card-title">Block Drop</div>
-            <a class="play-btn" href="/game.html?game=block-drop">Play</a>
-          </div>
-        </div>
-
-        <!-- Slope -->
-        <div class="card" data-name="slope">
-          <img class="card-thumb" src="images/slope.png" alt="Slope" style="object-fit:cover;">
-          <div class="card-body">
-            <div class="card-title">Slope</div>
-            <a class="play-btn" href="/game.html?game=slope">Play</a>
-          </div>
-        </div>
-
-<div class="no-results" id="no-results">No games found.</div>
-
+      <div class="trust-row reveal" style="animation-delay:.2s">
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> 100% Free</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> No Sign-Up</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> No Downloads</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Mobile Friendly</span>
       </div>
-    </main>
+    </section>
+
+    <!-- ───── ORIGINALS ───── -->
+    <section id="originals">
+      <div class="sec-head">
+        <div class="titles">
+          <span class="eyebrow">★ CassiusBreak Originals</span>
+          <h2>Exclusive games you won't find anywhere else</h2>
+        </div>
+        <p>Built in-house and free forever — our hand-crafted originals, playable instantly.</p>
+      </div>
+
+      <div class="originals-grid" id="originals-grid"><!-- injected --></div>
+    </section>
+
+    <!-- ───── ALL GAMES ───── -->
+    <section id="all-games">
+      <div class="sec-head">
+        <div class="titles">
+          <span class="eyebrow">Game Library</span>
+          <h2>All Games</h2>
+        </div>
+        <p>Pick a category or search to find your next favourite. New games added regularly.</p>
+      </div>
+
+      <div class="filters" id="filters"><!-- injected --></div>
+
+      <div class="games-grid" id="games-grid"><!-- injected --></div>
+      <div class="no-results" id="no-results">No games match that — try another search or category.</div>
+    </section>
+
+    <!-- ───── WHY BAND ───── -->
+    <section>
+      <div class="why-band">
+        <div class="why-grid">
+          <div class="why-item">
+            <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+            <div class="stat-num">&lt;1s</div>
+            <h4>Instant Play</h4>
+            <p>Games load fast and run right in your browser — no waiting, no installs.</p>
+          </div>
+          <div class="why-item">
+            <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <div class="stat-num">Safe</div>
+            <h4>School-Friendly</h4>
+            <p>No accounts, no chat, no ads chasing you around. Just clean, simple fun.</p>
+          </div>
+          <div class="why-item">
+            <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg></div>
+            <div class="stat-num">Any</div>
+            <h4>Device, Any Screen</h4>
+            <p>Phone, tablet, Chromebook or PC — it all just works, touch or keyboard.</p>
+          </div>
+          <div class="why-item">
+            <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <div class="stat-num">New</div>
+            <h4>Games Weekly</h4>
+            <p>We're always building. Bookmark CassiusBreak and check back for more.</p>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 
-  <!-- FOOTER -->
+  <!-- ───── FOOTER ───── -->
   <footer>
-    &copy; CassiusBreak 2026 &mdash; All games are original
+    <div class="footer-inner">
+      <div class="footer-left">
+        <a href="/" class="logo"><span class="mark">C</span><span>Cassius<b>Break</b></span></a>
+        <p>Free unblocked games · cassiusbreak.com</p>
+      </div>
+      <div class="footer-links">
+        <a href="#originals">Originals</a>
+        <a href="#all-games">All Games</a>
+        <a href="#top">Back to top</a>
+      </div>
+    </div>
+    <div style="text-align:center; padding:0 22px 26px; color:var(--muted-2); font-size:0.78rem;">
+      © 2026 CassiusBreak — All original games are made by us. Play free, anywhere.
+    </div>
   </footer>
 
   <script>
-    const search = document.getElementById('search');
-    const cards = document.querySelectorAll('.card[data-name]');
-    const noResults = document.getElementById('no-results');
+  (function () {
+    // ───── DATA ─────
+    const ORIGINALS = [
+      { id:'speed-runner', title:'Dino Run',   cat:'Arcade', img:'images/dino-run.png',
+        blurb:'A fast-paced endless runner. Leap over obstacles and chase a new high score — it only gets quicker.' },
+      { id:'block-drop',   title:'Block Drop', cat:'Puzzle', img:'images/block-drop.png',
+        blurb:'Stack, rotate and clear lines in this addictive block puzzle. Easy to learn, hard to put down.' },
+      { id:'slope',        title:'Slope',      cat:'Skill',  img:'images/slope.png',
+        blurb:'Race a ball down a neon slope at breakneck speed. One wrong move and it\'s over — how far can you get?' },
+    ];
 
-    search.addEventListener('input', () => {
-      const q = search.value.toLowerCase().trim();
+    // Coming-soon placeholders (no links) — signal a growing library
+    const SOON = [
+      { title:'Drift Kings',  cat:'Racing'  },
+      { title:'Pixel Strike', cat:'Shooter' },
+      { title:'Snake Arena',  cat:'.io'     },
+      { title:'Cube Maze',    cat:'Puzzle'  },
+      { title:'Goal Rush',    cat:'Sports'  },
+      { title:'Neon Pong',    cat:'Arcade'  },
+      { title:'Tower Climb',  cat:'Skill'   },
+      { title:'Hyper Kart',   cat:'Racing'  },
+      { title:'Bubble Pop',   cat:'Puzzle'  },
+    ];
+
+    const PLAY_URL = id => '/game.html?game=' + id;
+
+    // ───── ICONS ─────
+    const ICON_PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>';
+    const ICON_STAR = '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15 9 22 9 16.5 13.5 18.5 21 12 16.5 5.5 21 7.5 13.5 2 9 9 9 12 2"/></svg>';
+    const ICON_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+    const ICON_LOCK = '<svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+
+    // ───── RENDER ORIGINALS ─────
+    const oGrid = document.getElementById('originals-grid');
+    oGrid.innerHTML = ORIGINALS.map((g, i) => `
+      <article class="orig-card reveal" style="animation-delay:${0.1 + i*0.07}s">
+        <a href="${PLAY_URL(g.id)}" class="orig-thumb" aria-label="Play ${g.title}">
+          <span class="orig-badge">${ICON_STAR} Original</span>
+          <span class="orig-cat-tag">${g.cat}</span>
+          <img src="${g.img}" alt="${g.title}" loading="lazy" width="640" height="400">
+        </a>
+        <div class="orig-body">
+          <h3>${g.title}</h3>
+          <p>${g.blurb}</p>
+          <div class="orig-foot">
+            <span class="orig-meta">${ICON_CHECK} Free · Instant</span>
+            <a href="${PLAY_URL(g.id)}" class="btn-play">${ICON_PLAY} Play</a>
+          </div>
+        </div>
+      </article>`).join('');
+
+    // ───── BUILD LIBRARY (real + soon) ─────
+    const LIBRARY = [
+      ...ORIGINALS.map(g => ({ ...g, original:true, soon:false })),
+      ...SOON.map(g => ({ ...g, original:false, soon:true })),
+    ];
+
+    // categories from data, ordered
+    const ORDER = ['Arcade','Puzzle','Skill','Racing','Shooter','.io','Sports'];
+    const cats = ['All', ...ORDER.filter(c => LIBRARY.some(g => g.cat === c))];
+
+    // ───── RENDER FILTER CHIPS ─────
+    const filters = document.getElementById('filters');
+    filters.innerHTML = cats.map((c, i) =>
+      `<button class="chip${i===0?' active':''}" data-cat="${c}">${c}</button>`).join('');
+
+    // ───── RENDER GAME CARDS ─────
+    const grid = document.getElementById('games-grid');
+    grid.innerHTML = LIBRARY.map(g => {
+      const catTag = `<span class="gc-cat">${g.cat}</span>`;
+      if (g.soon) {
+        return `
+        <div class="game-card soon" data-title="${g.title.toLowerCase()}" data-cat="${g.cat}">
+          <div class="gc-thumb">${catTag}<span class="soon-flag">Soon</span>${ICON_LOCK}</div>
+          <div class="gc-body"><div class="gc-title">${g.title}</div></div>
+        </div>`;
+      }
+      return `
+        <a class="game-card" href="${PLAY_URL(g.id)}" data-title="${g.title.toLowerCase()}" data-cat="${g.cat}">
+          <div class="gc-thumb">
+            ${catTag}<span class="gc-orig-flag">${ICON_STAR}</span>
+            <img src="${g.img}" alt="${g.title}" loading="lazy" width="480" height="300">
+            <div class="gc-play-overlay"><span class="circle">${ICON_PLAY}</span></div>
+          </div>
+          <div class="gc-body"><div class="gc-title">${g.title}</div></div>
+        </a>`;
+    }).join('');
+
+    // ───── SEARCH + FILTER LOGIC ─────
+    const cards = Array.from(grid.querySelectorAll('.game-card'));
+    const noResults = document.getElementById('no-results');
+    const searchHero = document.getElementById('search-hero');
+    const searchTop = document.getElementById('search-top');
+    let activeCat = 'All';
+    let query = '';
+
+    function apply() {
       let visible = 0;
       cards.forEach(card => {
-        const match = card.dataset.name.includes(q);
-        card.style.display = match ? '' : 'none';
-        if (match) visible++;
+        const matchCat = activeCat === 'All' || card.dataset.cat === activeCat;
+        const matchQ = card.dataset.title.includes(query);
+        const show = matchCat && matchQ;
+        card.style.display = show ? '' : 'none';
+        if (show) visible++;
       });
-      noResults.style.display = visible === 0 ? 'block' : 'none';
+      noResults.classList.toggle('show', visible === 0);
+    }
+
+    filters.addEventListener('click', e => {
+      const chip = e.target.closest('.chip');
+      if (!chip) return;
+      filters.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      activeCat = chip.dataset.cat;
+      apply();
     });
+
+    function onSearch(val, mirror) {
+      query = val.toLowerCase().trim();
+      if (mirror) mirror.value = val;
+      apply();
+    }
+    searchHero.addEventListener('input', () => onSearch(searchHero.value, searchTop));
+    searchTop.addEventListener('input', () => onSearch(searchTop.value, searchHero));
+
+    // jump to library when typing in the top search
+    searchTop.addEventListener('focus', () => {
+      if (window.scrollY < 200) document.getElementById('all-games').scrollIntoView({ behavior:'smooth' });
+    });
+  })();
   </script>
 
 </body>

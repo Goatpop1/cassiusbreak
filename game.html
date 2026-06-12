@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CassiusBreak</title>
+  <meta name="theme-color" content="#0a0a12">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230a0a12'/><text x='50' y='72' font-size='64' font-family='Arial' font-weight='900' text-anchor='middle' fill='%2338bdf8'>C</text></svg>">
   <style>
     *, *::before, *::after {
       box-sizing: border-box;
@@ -12,13 +14,17 @@
     }
 
     :root {
-      --bg: #1a0033;
-      --bg-dark: #0d001a;
-      --bg-card: #12002a;
-      --accent: #00ff88;
-      --accent-glow: rgba(0, 255, 136, 0.4);
-      --text: #ffffff;
-      --text-muted: #aaaacc;
+      --bg: #0a0a12;
+      --bg-dark: #0f0f1c;
+      --bg-card: #141426;
+      --accent: #38bdf8;
+      --accent-2: #8b5cf6;
+      --accent-glow: rgba(56, 189, 248, 0.35);
+      --grad: linear-gradient(105deg, #22d3ee 0%, #38bdf8 38%, #8b5cf6 100%);
+      --line: rgba(255,255,255,0.08);
+      --line-2: rgba(255,255,255,0.14);
+      --text: #f5f7ff;
+      --text-muted: #9aa0bf;
       --header-height: 64px;
     }
 
@@ -27,6 +33,18 @@
       color: var(--text);
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       min-height: 100%;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background:
+        radial-gradient(800px 500px at 10% -10%, rgba(56,189,248,0.12), transparent 60%),
+        radial-gradient(700px 500px at 95% 6%, rgba(139,92,246,0.12), transparent 58%);
+      pointer-events: none;
     }
 
     /* ── HEADER ─────────────────────────────────────────── */
@@ -36,14 +54,15 @@
       left: 0;
       right: 0;
       height: var(--header-height);
-      background: var(--bg-dark);
-      border-bottom: 2px solid var(--accent);
+      background: rgba(10,10,18,0.78);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
       display: flex;
       align-items: center;
       padding: 0 24px;
       gap: 20px;
       z-index: 200;
-      box-shadow: 0 2px 20px var(--accent-glow);
     }
 
     .back-btn {
@@ -71,22 +90,38 @@
     .header-divider {
       width: 1px;
       height: 28px;
-      background: rgba(0, 255, 136, 0.2);
+      background: rgba(56, 189, 248, 0.2);
     }
 
     .logo {
-      font-size: 1.5rem;
+      font-size: 1.35rem;
       font-weight: 900;
-      color: var(--accent);
-      letter-spacing: 2px;
-      text-shadow: 0 0 16px var(--accent), 0 0 32px rgba(0, 255, 136, 0.3);
-      text-transform: uppercase;
+      letter-spacing: -0.5px;
       text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 9px;
     }
 
-    .logo span {
-      color: #ffffff;
+    .logo .mark {
+      width: 30px; height: 30px;
+      border-radius: 9px;
+      background: var(--grad);
+      display: grid;
+      place-items: center;
+      font-size: 1rem;
+      color: #06121e;
+      box-shadow: 0 4px 14px rgba(56,189,248,0.45);
     }
+
+    .logo b {
+      background: var(--grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .logo span { color: var(--text); }
 
     .header-game-title {
       font-size: 0.9rem;
@@ -104,7 +139,7 @@
     /* ── GAME SECTION ────────────────────────────────────── */
     .game-section {
       background: #000;
-      border-bottom: 2px solid rgba(0, 255, 136, 0.25);
+      border-bottom: 2px solid rgba(56, 189, 248, 0.25);
       position: relative;
     }
 
@@ -130,7 +165,7 @@
       bottom: 16px;
       right: 16px;
       background: rgba(0, 0, 0, 0.7);
-      border: 1px solid rgba(0, 255, 136, 0.4);
+      border: 1px solid rgba(56, 189, 248, 0.4);
       border-radius: 8px;
       color: var(--accent);
       padding: 8px 14px;
@@ -147,7 +182,7 @@
     }
 
     .fullscreen-btn:hover {
-      background: rgba(0, 255, 136, 0.15);
+      background: rgba(56, 189, 248, 0.15);
       border-color: var(--accent);
     }
 
@@ -217,7 +252,7 @@
 
     .info-card {
       background: var(--bg-card);
-      border: 1px solid rgba(0, 255, 136, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.15);
       border-radius: 14px;
       padding: 28px;
     }
@@ -264,8 +299,8 @@
       min-width: 36px;
       height: 32px;
       padding: 0 10px;
-      background: rgba(0, 255, 136, 0.08);
-      border: 1px solid rgba(0, 255, 136, 0.3);
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.3);
       border-radius: 6px;
       color: var(--accent);
       font-size: 0.75rem;
@@ -279,7 +314,7 @@
     .more-games {
       margin-top: 56px;
       padding-top: 48px;
-      border-top: 1px solid rgba(0, 255, 136, 0.12);
+      border-top: 1px solid rgba(56, 189, 248, 0.12);
     }
 
     .more-games-heading {
@@ -299,7 +334,7 @@
 
     .more-card {
       background: var(--bg-card);
-      border: 1px solid rgba(0, 255, 136, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.15);
       border-radius: 12px;
       overflow: hidden;
       text-decoration: none;
@@ -366,7 +401,7 @@
       All Games
     </a>
     <div class="header-divider"></div>
-    <a class="logo" href="/">Cassius<span>Break</span></a>
+    <a class="logo" href="/"><span class="mark">C</span><span>Cassius<b>Break</b></span></a>
     <div class="header-game-title" id="header-game-title"></div>
   </header>
 
