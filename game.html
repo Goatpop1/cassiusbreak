@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CassiusBreak</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #1a0033;
+      --bg-dark: #0d001a;
+      --bg-card: #12002a;
+      --accent: #00ff88;
+      --accent-glow: rgba(0, 255, 136, 0.4);
+      --text: #ffffff;
+      --text-muted: #aaaacc;
+      --header-height: 64px;
+    }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100%;
+    }
+
+    /* ── HEADER ─────────────────────────────────────────── */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--header-height);
+      background: var(--bg-dark);
+      border-bottom: 2px solid var(--accent);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 20px;
+      z-index: 200;
+      box-shadow: 0 2px 20px var(--accent-glow);
+    }
+
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: color 0.2s;
+      white-space: nowrap;
+    }
+
+    .back-btn:hover {
+      color: var(--accent);
+    }
+
+    .back-btn svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .header-divider {
+      width: 1px;
+      height: 28px;
+      background: rgba(0, 255, 136, 0.2);
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--accent);
+      letter-spacing: 2px;
+      text-shadow: 0 0 16px var(--accent), 0 0 32px rgba(0, 255, 136, 0.3);
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+
+    .logo span {
+      color: #ffffff;
+    }
+
+    .header-game-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-left: auto;
+      letter-spacing: 1px;
+    }
+
+    /* ── MAIN CONTENT ────────────────────────────────────── */
+    .page {
+      padding-top: var(--header-height);
+    }
+
+    /* ── GAME SECTION ────────────────────────────────────── */
+    .game-section {
+      background: #000;
+      border-bottom: 2px solid rgba(0, 255, 136, 0.25);
+      position: relative;
+    }
+
+    .game-wrapper {
+      position: relative;
+      width: 100%;
+      height: calc(100vh - var(--header-height));
+      display: flex;
+      align-items: stretch;
+    }
+
+    #game-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    /* Fullscreen button overlay */
+    .fullscreen-btn {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid rgba(0, 255, 136, 0.4);
+      border-radius: 8px;
+      color: var(--accent);
+      padding: 8px 14px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s, border-color 0.2s;
+      z-index: 10;
+      user-select: none;
+    }
+
+    .fullscreen-btn:hover {
+      background: rgba(0, 255, 136, 0.15);
+      border-color: var(--accent);
+    }
+
+    .fullscreen-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* scroll hint arrow */
+    .scroll-hint {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: rgba(255,255,255,0.35);
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      animation: bob 2s ease-in-out infinite;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .scroll-hint svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    @keyframes bob {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(6px); }
+    }
+
+    /* ── INFO SECTION ────────────────────────────────────── */
+    .info-section {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 56px 32px 80px;
+    }
+
+    .info-title {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--text);
+      margin-bottom: 6px;
+      letter-spacing: 1px;
+    }
+
+    .info-tagline {
+      color: var(--accent);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 40px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+
+    .info-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(0, 255, 136, 0.15);
+      border-radius: 14px;
+      padding: 28px;
+    }
+
+    .info-card.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .info-card-heading {
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .info-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.75;
+    }
+
+    /* Controls table */
+    .controls-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .controls-list li {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .key {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 36px;
+      height: 32px;
+      padding: 0 10px;
+      background: rgba(0, 255, 136, 0.08);
+      border: 1px solid rgba(0, 255, 136, 0.3);
+      border-radius: 6px;
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* More games strip */
+    .more-games {
+      margin-top: 56px;
+      padding-top: 48px;
+      border-top: 1px solid rgba(0, 255, 136, 0.12);
+    }
+
+    .more-games-heading {
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 24px;
+    }
+
+    .more-games-grid {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .more-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(0, 255, 136, 0.15);
+      border-radius: 12px;
+      overflow: hidden;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 20px 14px 14px;
+      min-width: 180px;
+    }
+
+    .more-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 24px var(--accent-glow);
+      border-color: var(--accent);
+    }
+
+    .more-card-name {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .more-card-cta {
+      font-size: 0.7rem;
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* ── RESPONSIVE ──────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .game-wrapper {
+        height: 60vh;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .info-section {
+        padding: 36px 20px 60px;
+      }
+
+      .info-title {
+        font-size: 1.5rem;
+      }
+
+      .header-game-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <a class="back-btn" href="/">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      All Games
+    </a>
+    <div class="header-divider"></div>
+    <a class="logo" href="/">Cassius<span>Break</span></a>
+    <div class="header-game-title" id="header-game-title"></div>
+  </header>
+
+  <div class="page">
+
+    <!-- GAME BOX -->
+    <div class="game-section">
+      <div class="game-wrapper">
+        <iframe id="game-frame" allowfullscreen title="Game"></iframe>
+
+        <button class="fullscreen-btn" id="fullscreen-btn" title="Fullscreen">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+            <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+          </svg>
+          Fullscreen
+        </button>
+
+        <div class="scroll-hint" id="scroll-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+          Scroll for info
+        </div>
+      </div>
+    </div>
+
+    <!-- INFO BELOW GAME -->
+    <div class="info-section">
+      <div class="info-title" id="info-title">Game</div>
+      <div class="info-tagline" id="info-tagline"></div>
+
+      <div class="info-grid">
+        <div class="info-card full-width">
+          <div class="info-card-heading">About</div>
+          <p id="info-description"></p>
+        </div>
+
+        <div class="info-card">
+          <div class="info-card-heading">Controls</div>
+          <ul class="controls-list" id="controls-list"></ul>
+        </div>
+
+        <div class="info-card">
+          <div class="info-card-heading">Tips</div>
+          <p id="info-tips"></p>
+        </div>
+      </div>
+
+      <div class="more-games">
+        <div class="more-games-heading">More Games</div>
+        <div class="more-games-grid" id="more-games-grid"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const GAMES = {
+      'speed-runner': {
+        name: 'Dino Run',
+        tagline: 'Endless Runner',
+        src: '/games/speed-runner/index.html',
+        description: 'Dodge incoming obstacles in this fast-paced endless runner. The further you go, the faster it gets — how long can you survive?',
+        tips: 'Time your jumps early — obstacles come fast at higher speeds. Focus on rhythm rather than reacting at the last second.',
+        controls: [
+          { key: 'Space', action: 'Jump' },
+          { key: '↑', action: 'Jump' },
+          { key: 'Tap', action: 'Jump (mobile)' },
+        ],
+      },
+      'block-drop': {
+        name: 'Block Drop',
+        tagline: 'Puzzle',
+        src: '/games/block-drop/index.html',
+        description: 'Stack and clear blocks in this classic puzzle game. Fill complete rows to clear them and keep the board from filling up.',
+        tips: 'Keep the stack flat and low. Build toward the edges first so you can fill rows faster.',
+        controls: [
+          { key: '←  →', action: 'Move block' },
+          { key: '↑', action: 'Rotate' },
+          { key: '↓', action: 'Soft drop' },
+          { key: 'Space', action: 'Hard drop' },
+        ],
+      },
+      'slope': {
+        name: 'Slope',
+        tagline: 'Reflex & Speed',
+        src: '/games/Slope/index.html',
+        description: 'Roll a ball down an endless, procedurally generated slope. Dodge the red barriers and don\'t fall off the edge.',
+        tips: 'Stay near the centre of the track when possible — edges give you less room to react. Steer smoothly rather than tapping.',
+        controls: [
+          { key: '←  →', action: 'Steer ball' },
+          { key: 'A  D', action: 'Steer ball' },
+          { key: 'Space', action: 'Restart after game over' },
+        ],
+      },
+    };
+
+    const ALL_GAMES = [
+      { id: 'speed-runner', name: 'Dino Run' },
+      { id: 'block-drop', name: 'Block Drop' },
+      { id: 'slope', name: 'Slope' },
+    ];
+
+    // Parse ?game= from URL
+    const params = new URLSearchParams(location.search);
+    const gameId = params.get('game') || 'speed-runner';
+    const game = GAMES[gameId] || GAMES['speed-runner'];
+
+    // Set page title
+    document.title = game.name + ' — CassiusBreak';
+
+    // Populate header
+    document.getElementById('header-game-title').textContent = game.name;
+
+    // Load game iframe
+    document.getElementById('game-frame').src = game.src;
+
+    // Populate info
+    document.getElementById('info-title').textContent = game.name;
+    document.getElementById('info-tagline').textContent = game.tagline;
+    document.getElementById('info-description').textContent = game.description;
+    document.getElementById('info-tips').textContent = game.tips;
+
+    const controlsList = document.getElementById('controls-list');
+    game.controls.forEach(({ key, action }) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<span class="key">${key}</span><span>${action}</span>`;
+      controlsList.appendChild(li);
+    });
+
+    // More games (exclude current)
+    const moreGrid = document.getElementById('more-games-grid');
+    ALL_GAMES.filter(g => g.id !== gameId).forEach(g => {
+      const a = document.createElement('a');
+      a.className = 'more-card';
+      a.href = `/game.html?game=${g.id}`;
+      a.innerHTML = `<div><div class="more-card-name">${g.name}</div><div class="more-card-cta">Play →</div></div>`;
+      moreGrid.appendChild(a);
+    });
+
+    // Fullscreen button
+    const gameSection = document.querySelector('.game-section');
+    document.getElementById('fullscreen-btn').addEventListener('click', () => {
+      if (gameSection.requestFullscreen) gameSection.requestFullscreen();
+      else if (gameSection.webkitRequestFullscreen) gameSection.webkitRequestFullscreen();
+    });
+
+    // Hide scroll hint once user scrolls
+    const scrollHint = document.getElementById('scroll-hint');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 20) scrollHint.style.opacity = '0';
+      else scrollHint.style.opacity = '1';
+    }, { passive: true });
+  </script>
+
+</body>
+</html>
