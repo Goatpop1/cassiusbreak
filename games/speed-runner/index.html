@@ -156,7 +156,7 @@
       animation: pulse 0.8s ease-in-out infinite;
     }
 
-    #restart-btn {
+    #start-btn, #restart-btn {
       margin-top: 28px;
       padding: 15px 56px;
       font: inherit;
@@ -173,12 +173,12 @@
       transition: transform 0.12s, box-shadow 0.12s;
     }
 
-    #restart-btn:hover {
+    #start-btn:hover, #restart-btn:hover {
       transform: scale(1.05);
       box-shadow: 0 0 38px rgba(0, 255, 136, 0.85);
     }
 
-    #restart-btn:active {
+    #start-btn:active, #restart-btn:active {
       transform: scale(0.97);
     }
 
@@ -228,7 +228,8 @@
         <span class="touch-only"><b>TAP</b> jump &nbsp;&middot;&nbsp; <b>TAP &times;2</b> double jump<br></span>
         Survive as long as you can &mdash; the speed rises every 10 seconds.
       </div>
-      <div class="pulse"><span class="touch-hide">PRESS SPACE TO START</span><span class="touch-only">TAP TO START</span></div>
+      <button id="start-btn">▶ Play</button>
+      <div class="pulse touch-hide">or press SPACE</div>
     </div>
   </div>
 
@@ -962,6 +963,11 @@
       const goBest = document.getElementById('go-best');
       const goNew = document.getElementById('go-new');
       const restartBtn = document.getElementById('restart-btn');
+
+      document.getElementById('start-btn').addEventListener('click', () => {
+        ensureAudio();
+        if (state === START) resetGame();
+      });
 
       restartBtn.addEventListener('click', () => {
         restartBtn.blur();
