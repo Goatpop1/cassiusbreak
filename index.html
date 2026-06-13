@@ -21,18 +21,18 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --accent:      #00BFFF;
-      --accent-dim:  rgba(0,191,255,0.14);
-      --accent-glow: rgba(0,191,255,0.30);
-      --bg:          #010A18;
-      --bg2:         #020F20;
-      --bg3:         #04172E;
-      --bg4:         #061E3C;
-      --border:      rgba(0,191,255,0.10);
-      --border2:     rgba(0,191,255,0.20);
-      --text:        #E8F4FF;
-      --text2:       #6EA8CC;
-      --text3:       #2D5A7A;
+      --accent:      #50D8FF;
+      --accent-dim:  rgba(80,216,255,0.14);
+      --accent-glow: rgba(80,216,255,0.30);
+      --bg:          #081828;
+      --bg2:         #0C2240;
+      --bg3:         #102848;
+      --bg4:         #163258;
+      --border:      rgba(80,216,255,0.12);
+      --border2:     rgba(80,216,255,0.22);
+      --text:        #F0F8FF;
+      --text2:       #90C4E8;
+      --text3:       #5090B8;
       --topbar-h:    58px;
       --sidebar-w:   244px;
       --r:           10px;
@@ -264,8 +264,8 @@
       scroll-margin-top: calc(var(--topbar-h) + 16px);
       padding: 28px 22px;
     }
-    .game-section:nth-child(odd)  { background: #0A3A6E; }
-    .game-section:nth-child(even) { background: #010D1F; }
+    .game-section:nth-child(odd)  { background: #1A5090; }
+    .game-section:nth-child(even) { background: #0C1E38; }
 
     .sec-head {
       display: flex;
@@ -299,11 +299,25 @@
     /* ── SECTION HEADS hidden ────────────────── */
     .sec-head { display: none; }
 
+    /* ── PURPLE BANNER ───────────────────────── */
+    .hero-banner {
+      background: linear-gradient(90deg, #5B21B6, #7C3AED, #9333EA);
+      padding: 18px 26px;
+      text-align: center;
+      margin-bottom: 0;
+    }
+    .hero-banner h1 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.3px;
+    }
+
     /* ── CARDS GRID ──────────────────────────── */
     .cards-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 14px;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
     }
 
     /* ── GAME CARD ───────────────────────────── */
@@ -394,8 +408,8 @@
     .footer-links { display: flex; gap: 20px; }
 
     /* ── RESPONSIVE ──────────────────────────── */
-    @media (max-width: 960px) {
-      .cards-grid { grid-template-columns: repeat(auto-fill, minmax(175px, 1fr)); }
+    @media (max-width: 1100px) {
+      .cards-grid { grid-template-columns: repeat(4, 1fr); }
     }
 
     @media (max-width: 768px) {
@@ -421,13 +435,9 @@
     }
 
     @media (max-width: 520px) {
-      .cards-grid { grid-template-columns: repeat(2, 1fr); }
+      .cards-grid { grid-template-columns: repeat(3, 1fr); }
       .logo { font-size: 1.1rem; }
       .ad-slot { height: 60px; font-size: 0.58rem; }
-    }
-
-    @media (max-width: 340px) {
-      .cards-grid { grid-template-columns: 1fr; }
     }
 
     /* reduce motion */
@@ -478,6 +488,11 @@
     <!-- Ad unit: leaderboard -->
     <div class="ad-slot" aria-label="Advertisement space">Advertisement</div>
 
+    <!-- Hero banner -->
+    <div class="hero-banner">
+      <h1>Best Unblocked HTML5 Games Online</h1>
+    </div>
+
     <!-- Sections injected by JS -->
     <div id="sections-container"></div>
 
@@ -509,32 +524,48 @@
 
   /* ── GAME DATA ── */
   const GAMES = {
-    'speed-runner': { name: 'Dino Run',    cat: 'Arcade',  img: 'images/dino-run.png',   original: true,  playable: true  },
-    'block-drop':   { name: 'Block Drop',  cat: 'Puzzle',  img: 'images/block-drop.png', original: true,  playable: true  },
-    'slope':        { name: 'Slope',       cat: 'Skill',   img: 'images/slope.png',      original: true,  playable: true  },
-    // Coming soon
-    'drift-kings':    { name: 'Drift Kings',    cat: 'Racing',  ph: 'ph-racing',  icon: '🏎', soon: true },
-    'pixel-strike':   { name: 'Pixel Strike',   cat: 'Shooter', ph: 'ph-shooter', icon: '🔫', soon: true },
-    'snake-arena':    { name: 'Snake Arena',     cat: 'Arcade',  ph: 'ph-arcade',  icon: '🕹', soon: true },
-    'cube-maze':      { name: 'Cube Maze',       cat: 'Puzzle',  ph: 'ph-puzzle',  icon: '🧩', soon: true },
-    'goal-rush':      { name: 'Goal Rush',       cat: 'Sports',  ph: 'ph-sports',  icon: '⚽', soon: true },
-    'neon-pong':      { name: 'Neon Pong',       cat: 'Arcade',  ph: 'ph-arcade',  icon: '🏓', soon: true },
-    'tower-climb':    { name: 'Tower Climb',     cat: 'Skill',   ph: 'ph-skill',   icon: '🗼', soon: true },
-    'hyper-kart':     { name: 'Hyper Kart',      cat: 'Racing',  ph: 'ph-racing',  icon: '🏁', soon: true },
-    'bubble-pop':     { name: 'Bubble Pop',      cat: 'Puzzle',  ph: 'ph-puzzle',  icon: '🫧', soon: true },
-    'combat-zone':    { name: 'Combat Zone',      cat: 'Action',  ph: 'ph-action',  icon: '⚔️', soon: true },
-    'ninja-dash':     { name: 'Ninja Dash',       cat: 'Action',  ph: 'ph-action',  icon: '🥷', soon: true },
-    'rush-blast':     { name: 'Rush Blast',       cat: 'Shooter', ph: 'ph-shooter', icon: '💥', soon: true },
-    'basket-jam':     { name: 'Basket Jam',       cat: 'Sports',  ph: 'ph-sports',  icon: '🏀', soon: true },
-    'space-chain':    { name: 'Space Chain',      cat: 'Shooter', ph: 'ph-shooter', icon: '🚀', soon: true },
-    'pool-rush':      { name: 'Pool Rush',        cat: 'Sports',  ph: 'ph-sports',  icon: '🎱', soon: true },
-    'mech-assault':   { name: 'Mech Assault',     cat: 'Action',  ph: 'ph-action',  icon: '🤖', soon: true },
-    'speed-trials':   { name: 'Speed Trials',     cat: 'Racing',  ph: 'ph-racing',  icon: '⚡', soon: true },
-    'flip-it':        { name: 'Flip It',          cat: 'Puzzle',  ph: 'ph-puzzle',  icon: '🔄', soon: true },
-    'io-swarm':       { name: 'IO Swarm',         cat: '.io',     ph: 'ph-io',      icon: '🌐', soon: true },
-    'io-merge':       { name: 'IO Merge',         cat: '.io',     ph: 'ph-io',      icon: '⭕', soon: true },
-    'orig-3':         { name: 'Coming Soon',      cat: 'Original', ph: 'ph-skill',  icon: '⭐', soon: true, orig_placeholder: true },
-    'orig-4':         { name: 'Coming Soon',      cat: 'Original', ph: 'ph-puzzle', icon: '⭐', soon: true, orig_placeholder: true },
+    'speed-runner': { name: 'Dino Run',      cat: 'Arcade',  img: 'images/dino-run.png',   original: true, playable: true },
+    'block-drop':   { name: 'Block Drop',    cat: 'Puzzle',  img: 'images/block-drop.png', original: true, playable: true },
+    'slope':        { name: 'Slope',         cat: 'Skill',   img: 'images/slope.png',      original: true, playable: true },
+    // Placeholders
+    'drift-kings':   { name: 'Drift Kings',   cat: 'Racing',  ph: 'ph-racing',  icon: '🏎', soon: true },
+    'pixel-strike':  { name: 'Pixel Strike',  cat: 'Shooter', ph: 'ph-shooter', icon: '🔫', soon: true },
+    'snake-arena':   { name: 'Snake Arena',   cat: 'Arcade',  ph: 'ph-arcade',  icon: '🕹', soon: true },
+    'cube-maze':     { name: 'Cube Maze',     cat: 'Puzzle',  ph: 'ph-puzzle',  icon: '🧩', soon: true },
+    'goal-rush':     { name: 'Goal Rush',     cat: 'Sports',  ph: 'ph-sports',  icon: '⚽', soon: true },
+    'neon-pong':     { name: 'Neon Pong',     cat: 'Arcade',  ph: 'ph-arcade',  icon: '🏓', soon: true },
+    'tower-climb':   { name: 'Tower Climb',   cat: 'Skill',   ph: 'ph-skill',   icon: '🗼', soon: true },
+    'hyper-kart':    { name: 'Hyper Kart',    cat: 'Racing',  ph: 'ph-racing',  icon: '🏁', soon: true },
+    'bubble-pop':    { name: 'Bubble Pop',    cat: 'Puzzle',  ph: 'ph-puzzle',  icon: '🫧', soon: true },
+    'combat-zone':   { name: 'Combat Zone',   cat: 'Action',  ph: 'ph-action',  icon: '⚔️', soon: true },
+    'ninja-dash':    { name: 'Ninja Dash',    cat: 'Action',  ph: 'ph-action',  icon: '🥷', soon: true },
+    'rush-blast':    { name: 'Rush Blast',    cat: 'Shooter', ph: 'ph-shooter', icon: '💥', soon: true },
+    'basket-jam':    { name: 'Basket Jam',    cat: 'Sports',  ph: 'ph-sports',  icon: '🏀', soon: true },
+    'space-chain':   { name: 'Space Chain',   cat: 'Shooter', ph: 'ph-shooter', icon: '🚀', soon: true },
+    'pool-rush':     { name: 'Pool Rush',     cat: 'Sports',  ph: 'ph-sports',  icon: '🎱', soon: true },
+    'mech-assault':  { name: 'Mech Assault',  cat: 'Action',  ph: 'ph-action',  icon: '🤖', soon: true },
+    'speed-trials':  { name: 'Speed Trials',  cat: 'Racing',  ph: 'ph-racing',  icon: '⚡', soon: true },
+    'flip-it':       { name: 'Flip It',       cat: 'Puzzle',  ph: 'ph-puzzle',  icon: '🔄', soon: true },
+    'io-swarm':      { name: 'IO Swarm',      cat: '.io',     ph: 'ph-io',      icon: '🌐', soon: true },
+    'io-merge':      { name: 'IO Merge',      cat: '.io',     ph: 'ph-io',      icon: '⭕', soon: true },
+    'star-blast':    { name: 'Star Blast',    cat: 'Shooter', ph: 'ph-shooter', icon: '💫', soon: true },
+    'coin-dash':     { name: 'Coin Dash',     cat: 'Arcade',  ph: 'ph-arcade',  icon: '🪙', soon: true },
+    'maze-run':      { name: 'Maze Run',      cat: 'Skill',   ph: 'ph-skill',   icon: '🌀', soon: true },
+    'cyber-punch':   { name: 'Cyber Punch',   cat: 'Action',  ph: 'ph-action',  icon: '👊', soon: true },
+    'surf-rider':    { name: 'Surf Rider',    cat: 'Sports',  ph: 'ph-sports',  icon: '🏄', soon: true },
+    'color-match':   { name: 'Color Match',   cat: 'Puzzle',  ph: 'ph-puzzle',  icon: '🎨', soon: true },
+    'stunt-race':    { name: 'Stunt Race',    cat: 'Racing',  ph: 'ph-racing',  icon: '🚗', soon: true },
+    'power-tennis':  { name: 'Power Tennis',  cat: 'Sports',  ph: 'ph-sports',  icon: '🎾', soon: true },
+    'dino-jump':     { name: 'Dino Jump',     cat: 'Arcade',  ph: 'ph-arcade',  icon: '🦕', soon: true },
+    'word-rush':     { name: 'Word Rush',     cat: 'Puzzle',  ph: 'ph-puzzle',  icon: '📝', soon: true },
+    'bot-wars':      { name: 'Bot Wars',      cat: 'Action',  ph: 'ph-action',  icon: '🦾', soon: true },
+    'sky-race':      { name: 'Sky Race',      cat: 'Racing',  ph: 'ph-racing',  icon: '✈️', soon: true },
+    'gem-quest':     { name: 'Gem Quest',     cat: 'Puzzle',  ph: 'ph-puzzle',  icon: '💎', soon: true },
+    'turbo-ball':    { name: 'Turbo Ball',    cat: 'Sports',  ph: 'ph-sports',  icon: '⚽', soon: true },
+    'shadow-strike': { name: 'Shadow Strike', cat: 'Shooter', ph: 'ph-shooter', icon: '🎯', soon: true },
+    'io-battle':     { name: 'IO Battle',     cat: '.io',     ph: 'ph-io',      icon: '🔵', soon: true },
+    'lava-run':      { name: 'Lava Run',      cat: 'Skill',   ph: 'ph-skill',   icon: '🌋', soon: true },
+    'blitz-ball':    { name: 'Blitz Ball',    cat: 'Sports',  ph: 'ph-sports',  icon: '🏈', soon: true },
   };
 
   /* ── SECTIONS ── */
@@ -542,71 +573,61 @@
     {
       id: 'trending',
       title: 'Trending Now',
-      dot: true,
       games: ['speed-runner', 'slope', 'block-drop', 'drift-kings', 'pixel-strike', 'snake-arena']
     },
     {
       id: 'originals',
       title: 'CassiusBreak Originals',
-      star: true,
-      games: ['speed-runner', 'block-drop', 'slope', 'orig-3', 'orig-4']
+      games: ['speed-runner', 'block-drop', 'slope', 'coin-dash', 'dino-jump', 'lava-run']
     },
     {
       id: 'action',
       title: 'Action',
-      dot: true,
-      games: ['combat-zone', 'ninja-dash', 'mech-assault', 'pixel-strike', 'rush-blast']
+      games: ['combat-zone', 'ninja-dash', 'mech-assault', 'cyber-punch', 'bot-wars', 'rush-blast']
     },
     {
       id: 'puzzle',
       title: 'Puzzle',
-      dot: true,
-      games: ['block-drop', 'cube-maze', 'bubble-pop', 'flip-it', 'neon-pong']
+      games: ['block-drop', 'cube-maze', 'bubble-pop', 'flip-it', 'color-match', 'gem-quest']
     },
     {
       id: 'racing',
       title: 'Racing',
-      dot: true,
-      games: ['drift-kings', 'hyper-kart', 'speed-trials', 'goal-rush']
+      games: ['drift-kings', 'hyper-kart', 'speed-trials', 'stunt-race', 'sky-race', 'goal-rush']
     },
     {
       id: 'shooters',
       title: 'Shooters',
-      dot: true,
-      games: ['pixel-strike', 'rush-blast', 'space-chain', 'combat-zone']
+      games: ['pixel-strike', 'rush-blast', 'space-chain', 'star-blast', 'shadow-strike', 'combat-zone']
     },
     {
       id: 'sports',
       title: 'Sports',
-      dot: true,
-      games: ['goal-rush', 'basket-jam', 'pool-rush', 'neon-pong']
+      games: ['goal-rush', 'basket-jam', 'pool-rush', 'surf-rider', 'power-tennis', 'turbo-ball']
+    },
+    {
+      id: 'arcade',
+      title: 'Arcade',
+      games: ['speed-runner', 'snake-arena', 'neon-pong', 'coin-dash', 'dino-jump', 'blitz-ball']
+    },
+    {
+      id: 'skill',
+      title: 'Skill',
+      games: ['slope', 'tower-climb', 'ninja-dash', 'maze-run', 'lava-run', 'word-rush']
     },
     {
       id: 'io-games',
       title: '.io Games',
-      dot: true,
-      games: ['snake-arena', 'io-swarm', 'io-merge', 'combat-zone']
+      games: ['snake-arena', 'io-swarm', 'io-merge', 'io-battle', 'combat-zone', 'star-blast']
     },
   ];
 
   /* ── SIDEBAR CATEGORIES ── */
   const SIDEBAR_CATS = [
-    { icon: '⭐', label: 'Originals',  sectionId: 'originals', startOpen: true,
-      games: ['speed-runner', 'block-drop', 'slope'] },
-    { icon: '⚔️', label: 'Action',     sectionId: 'action',
-      games: ['combat-zone', 'ninja-dash', 'mech-assault'] },
-    { icon: '🧩', label: 'Puzzle',     sectionId: 'puzzle',
-      games: ['block-drop', 'cube-maze', 'bubble-pop'] },
-    { icon: '🏎', label: 'Racing',     sectionId: 'racing',
-      games: ['drift-kings', 'hyper-kart', 'speed-trials'] },
-    { icon: '🔫', label: 'Shooters',   sectionId: 'shooters',
-      games: ['pixel-strike', 'rush-blast', 'space-chain'] },
-    { icon: '⚽', label: 'Sports',     sectionId: 'sports',
-      games: ['goal-rush', 'basket-jam', 'pool-rush'] },
-    { icon: '🕹', label: 'Arcade',     sectionId: 'trending',
-      games: ['speed-runner', 'snake-arena', 'neon-pong'] },
-    { icon: '🌐', label: '.io Games',  sectionId: 'io-games',
-      games: ['snake-arena', 'io-swarm', 'io-merge'] },
+    { icon: '🏎', label: 'Driving Games', sectionId: 'racing',
+      games: ['drift-kings', 'hyper-kart', 'speed-trials', 'stunt-race', 'sky-race', 'goal-rush'] },
+    { icon: '🔫', label: 'Shooters',      sectionId: 'shooters',
+      games: ['pixel-strike', 'rush-blast', 'space-chain', 'star-blast', 'shadow-strike', 'combat-zone'] },
   ];
 
   const PLAY_URL = id => '/game.html?game=' + id;
@@ -659,22 +680,21 @@
 
   /* ── RENDER SIDEBAR ── */
   const nav = document.getElementById('sidebar-nav');
-  nav.innerHTML = SIDEBAR_CATS.map((cat, i) => {
-    const gamesHtml = cat.games.map(gid => {
-      const g = GAMES[gid];
-      if (!g) return '';
-      const isOrig = g.original;
-      const isSoon = g.soon;
-      const cls = isOrig ? 'sidebar-link is-original' : isSoon ? 'sidebar-link is-soon' : 'sidebar-link';
-      const href = g.playable ? `href="${PLAY_URL(gid)}"` : '';
-      const tag = g.playable ? 'a' : 'span';
-      return `<${tag} ${href} class="${cls}"><span class="link-dot" aria-hidden="true"></span>${g.name}</${tag}>`;
-    }).join('');
 
-    const openClass = cat.startOpen ? ' open' : '';
+  function buildSidebarLink(gid) {
+    const g = GAMES[gid];
+    if (!g) return '';
+    const cls = g.original ? 'sidebar-link is-original' : g.soon ? 'sidebar-link is-soon' : 'sidebar-link';
+    const tag = g.playable ? 'a' : 'span';
+    const href = g.playable ? ` href="${PLAY_URL(gid)}"` : '';
+    return `<${tag}${href} class="${cls}"><span class="link-dot" aria-hidden="true"></span>${g.name}</${tag}>`;
+  }
+
+  const sectionsHtml = SIDEBAR_CATS.map(cat => {
+    const gamesHtml = cat.games.map(buildSidebarLink).join('');
     return `
-      <div class="sidebar-section${openClass}" data-section="${cat.sectionId}">
-        <div class="sidebar-cat" role="button" tabindex="0" aria-expanded="${cat.startOpen ? 'true' : 'false'}">
+      <div class="sidebar-section open" data-section="${cat.sectionId}">
+        <div class="sidebar-cat" role="button" tabindex="0" aria-expanded="true">
           <span class="cat-icon" aria-hidden="true">${cat.icon}</span>
           <span class="cat-label">${cat.label}</span>
           ${SVG_CHEVRON}
@@ -682,6 +702,15 @@
         <div class="sidebar-games">${gamesHtml}</div>
       </div>`;
   }).join('<div class="sidebar-divider" aria-hidden="true"></div>');
+
+  const allGamesHtml = Object.keys(GAMES).map(buildSidebarLink).join('');
+
+  nav.innerHTML = sectionsHtml +
+    '<div class="sidebar-divider" aria-hidden="true"></div>' +
+    `<div class="sidebar-cat" style="pointer-events:none; cursor:default;">
+       <span class="cat-label" style="font-size:0.68rem; letter-spacing:0.8px;">ALL GAMES</span>
+     </div>` +
+    allGamesHtml;
 
   /* ── SIDEBAR COLLAPSE ── */
   nav.addEventListener('click', e => {
