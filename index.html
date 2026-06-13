@@ -313,17 +313,13 @@
       background: var(--bg3);
       border: 1px solid var(--border2);
       display: block;
-      position: relative;
-      transition: transform .2s, border-color .2s, box-shadow .2s;
+      transition: border-color .15s;
     }
     a.game-card:hover {
-      transform: translateY(-4px);
       border-color: rgba(0,191,255,0.45);
-      box-shadow: 0 8px 22px rgba(0,191,255,0.22), 0 2px 8px rgba(0,0,0,0.55);
     }
 
     .card-thumb {
-      position: relative;
       aspect-ratio: 16/10;
       overflow: hidden;
     }
@@ -331,128 +327,41 @@
       width: 100%; height: 100%;
       object-fit: cover;
       display: block;
-      transition: transform .34s ease;
     }
-    a.game-card:hover .card-thumb img { transform: scale(1.06); }
 
     /* Placeholder thumb backgrounds */
-    .ph-action  { background: linear-gradient(135deg, #001D3D, #003070); }
-    .ph-puzzle  { background: linear-gradient(135deg, #001828, #002A4A); }
-    .ph-racing  { background: linear-gradient(135deg, #001530, #003060); }
-    .ph-shooter { background: linear-gradient(135deg, #001A38, #002D5C); }
-    .ph-sports  { background: linear-gradient(135deg, #00122A, #002248); }
-    .ph-arcade  { background: linear-gradient(135deg, #001830, #003268); }
-    .ph-skill   { background: linear-gradient(135deg, #001428, #00264E); }
-    .ph-io      { background: linear-gradient(135deg, #001C3C, #003272); }
+    .ph-action  { background: #001D3D; }
+    .ph-puzzle  { background: #001828; }
+    .ph-racing  { background: #001530; }
+    .ph-shooter { background: #001A38; }
+    .ph-sports  { background: #00122A; }
+    .ph-arcade  { background: #001830; }
+    .ph-skill   { background: #001428; }
+    .ph-io      { background: #001C3C; }
 
     .ph-inner {
-      position: absolute;
-      inset: 0;
+      height: 100%;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 7px;
     }
     .ph-icon {
-      font-size: 1.6rem;
-      opacity: 0.18;
-      line-height: 1;
-    }
-    .ph-label {
-      font-size: 0.58rem;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--text3);
-    }
-
-    /* Play overlay */
-    .play-ov {
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.48);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      transition: opacity .18s;
-    }
-    a.game-card:hover .play-ov { opacity: 1; }
-    .play-circle {
-      width: 42px; height: 42px;
-      border-radius: 50%;
-      background: var(--accent);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 16px rgba(0,191,255,0.60);
-      transform: scale(0.78);
-      transition: transform .18s;
-    }
-    a.game-card:hover .play-circle { transform: scale(1); }
-    .play-circle svg { width: 16px; height: 16px; color: #fff; margin-left: 2px; }
-
-    /* Badges */
-    .badge-orig {
-      position: absolute;
-      top: 7px; left: 7px;
-      z-index: 2;
-      background: var(--accent);
-      color: #fff;
-      font-size: 0.56rem;
-      font-weight: 800;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      padding: 3px 7px;
-      border-radius: 4px;
-    }
-    .badge-soon {
-      position: absolute;
-      top: 7px; right: 7px;
-      z-index: 2;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid var(--border2);
-      color: var(--text2);
-      font-size: 0.56rem;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      padding: 3px 7px;
-      border-radius: 4px;
-    }
-    .badge-hot {
-      position: absolute;
-      top: 7px; right: 7px;
-      z-index: 2;
-      background: rgba(255,80,50,0.2);
-      border: 1px solid rgba(255,80,50,0.4);
-      color: #ff6644;
-      font-size: 0.56rem;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      padding: 3px 7px;
-      border-radius: 4px;
+      font-size: 1.8rem;
+      opacity: 0.25;
     }
 
     /* Card info */
     .card-info {
-      padding: 8px 10px 10px;
+      padding: 7px 10px 9px;
     }
     .card-name {
       font-size: 0.84rem;
-      font-weight: 700;
+      font-weight: 600;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .card-cat {
-      font-size: 0.7rem;
-      color: var(--text3);
-      margin-top: 2px;
-    }
-    .game-card.is-soon .card-name { color: var(--text2); }
+    .game-card.is-soon .card-name { color: var(--text3); }
 
     /* ── SEARCH RESULTS ──────────────────────── */
     .search-panel { display: none; }
@@ -524,7 +433,7 @@
     /* reduce motion */
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-      .game-card, .play-circle, .card-thumb img, .sidebar, .chevron { transition: none; }
+      .game-card, .sidebar, .chevron { transition: none; }
     }
   </style>
 </head>
@@ -703,7 +612,6 @@
   const PLAY_URL = id => '/game.html?game=' + id;
 
   /* ── ICON SVGs ── */
-  const SVG_PLAY = `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"/></svg>`;
   const SVG_CHEVRON = `<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>`;
 
   /* ── BUILD CARD HTML ── */
@@ -712,42 +620,20 @@
     if (!g) return '';
 
     const isSoon = g.soon;
-    const isOrig = g.original;
-    const isOrigPlaceholder = g.orig_placeholder;
 
     let thumbHtml;
     if (g.playable && g.img) {
-      thumbHtml = `
-        <div class="card-thumb">
-          <img src="${g.img}" alt="${g.name} — free unblocked ${g.cat} game" loading="lazy" width="320" height="200">
-          ${isOrig ? `<span class="badge-orig">Original</span>` : ''}
-          <div class="play-ov"><div class="play-circle">${SVG_PLAY}</div></div>
-        </div>`;
-    } else if (isOrigPlaceholder) {
-      thumbHtml = `
-        <div class="card-thumb ${g.ph || 'ph-skill'}">
-          <div class="ph-inner"><div class="ph-icon">${g.icon}</div><div class="ph-label">Original</div></div>
-          <span class="badge-orig">Original</span>
-          <span class="badge-soon">Soon</span>
-        </div>`;
+      thumbHtml = `<div class="card-thumb"><img src="${g.img}" alt="${g.name}" loading="lazy" width="320" height="200"></div>`;
     } else {
-      thumbHtml = `
-        <div class="card-thumb ${g.ph}">
-          <div class="ph-inner"><div class="ph-icon">${g.icon}</div><div class="ph-label">${g.cat}</div></div>
-          <span class="badge-soon">Soon</span>
-        </div>`;
+      thumbHtml = `<div class="card-thumb ${g.ph || 'ph-skill'}"><div class="ph-inner"><div class="ph-icon">${g.icon || '🎮'}</div></div></div>`;
     }
 
-    const info = `
-      <div class="card-info">
-        <div class="card-name">${g.name}</div>
-        <div class="card-cat">${g.cat}</div>
-      </div>`;
+    const info = `<div class="card-info"><div class="card-name">${g.name}</div></div>`;
 
     if (isSoon) {
-      return `<div class="game-card is-soon" role="article" aria-label="${g.name} — coming soon">${thumbHtml}${info}</div>`;
+      return `<div class="game-card is-soon">${thumbHtml}${info}</div>`;
     }
-    return `<a class="game-card" href="${PLAY_URL(gameId)}" aria-label="Play ${g.name}">${thumbHtml}${info}</a>`;
+    return `<a class="game-card" href="${PLAY_URL(gameId)}">${thumbHtml}${info}</a>`;
   }
 
   /* ── RENDER SECTIONS ── */
