@@ -406,8 +406,8 @@
     .game-view.active { display: flex; }
 
     .game-box {
-      width: 52%;
-      height: 52%;
+      width: calc(52% + 15px);
+      height: calc(52% + 15px);
       background: var(--bg2);
       border: 1px solid var(--border2);
       border-radius: 12px;
@@ -416,10 +416,9 @@
     }
 
     .game-box iframe {
-      width: 100%;
-      height: 100%;
       border: none;
       display: block;
+      flex-shrink: 0;
     }
 
     .game-box-close {
@@ -479,7 +478,7 @@
 
     @media (max-width: 768px) {
       .game-view { left: 0; }
-      .game-box { width: 88%; height: 55%; }
+      .game-box { width: calc(88% + 15px); height: calc(55% + 15px); }
     }
 
     /* ── FOOTER ──────────────────────────────── */
@@ -928,18 +927,49 @@
   /* ── GAME VIEW ── */
   const gameView       = document.getElementById('game-view');
   const gameFrame      = document.getElementById('game-view-frame');
+  const gameBox        = document.getElementById('game-box');
   const closeBtn       = document.getElementById('game-box-close');
   const playScreen     = document.getElementById('game-play-screen');
   const playTitle      = document.getElementById('game-play-title');
   const playBtn        = document.getElementById('game-play-btn');
   let   pendingGameSrc = '';
+  let   pendingGameId  = '';
+
+  /* Natural (unscaled) pixel dimensions for fixed-layout games.
+     Responsive canvas games have no entry here — they fill the box naturally. */
+  const GAME_NATURAL = {
+    '2048':        { w: 500,  h: 700  },
+    'snake':       { w: 1080, h: 900  },
+    'flappy-bird': { w: 288,  h: 512  },
+    'minesweeper': { w: 960,  h: 650  },
+  };
+
+  function applyGameScale(gameId) {
+    const nat = GAME_NATURAL[gameId];
+    if (!nat) {
+      /* Responsive game — fill the box */
+      gameFrame.style.cssText = 'width:100%;height:100%;border:none;display:block;transform:none;';
+      return;
+    }
+    const boxW = gameBox.clientWidth;
+    const boxH = gameBox.clientHeight;
+    const scale = Math.min(boxW / nat.w, boxH / nat.h);
+    const offX  = Math.max(0, (boxW - nat.w * scale) / 2);
+    const offY  = Math.max(0, (boxH - nat.h * scale) / 2);
+    gameFrame.style.cssText =
+      `width:${nat.w}px;height:${nat.h}px;border:none;display:block;` +
+      `transform:translate(${offX}px,${offY}px) scale(${scale});` +
+      `transform-origin:top left;`;
+  }
 
   function openGame(gameId) {
     const src  = GAME_SRC[gameId];
     const name = GAMES[gameId] ? GAMES[gameId].name : gameId;
     if (!src) return;
     pendingGameSrc = src;
+    pendingGameId  = gameId;
     gameFrame.src  = '';
+    gameFrame.style.cssText = 'border:none;display:block;';
     playTitle.textContent = name;
     playScreen.classList.remove('hidden');
     gameView.classList.add('active');
@@ -948,6 +978,7 @@
 
   function launchGame() {
     if (!pendingGameSrc) return;
+    applyGameScale(pendingGameId);
     gameFrame.src = pendingGameSrc;
     playScreen.classList.add('hidden');
   }
@@ -955,7 +986,9 @@
   function closeGame() {
     gameView.classList.remove('active');
     gameFrame.src  = '';
+    gameFrame.style.cssText = 'border:none;display:block;';
     pendingGameSrc = '';
+    pendingGameId  = '';
     playScreen.classList.remove('hidden');
     document.body.style.overflow = '';
   }
