@@ -498,12 +498,64 @@
           { key: 'Space', action: 'Restart after game over' },
         ],
       },
+      '2048': {
+        name: '2048',
+        tagline: 'Puzzle',
+        src: '/games/2048/index.html',
+        description: 'Slide the numbered tiles and merge matching pairs to add them up. Combine tiles again and again to reach the elusive 2048 tile — and keep going for an even higher score.',
+        tips: 'Pick one corner and keep your biggest tile parked there. Build a sorted row toward that corner and avoid swiping in the direction that would move it away.',
+        controls: [
+          { key: '←  →', action: 'Slide tiles' },
+          { key: '↑  ↓', action: 'Slide tiles' },
+          { key: 'Swipe', action: 'Slide tiles (mobile)' },
+        ],
+      },
+      'snake': {
+        name: 'Snake',
+        tagline: 'Arcade Classic',
+        src: '/games/snake/index.html',
+        description: 'Guide the snake around the board to eat the food and grow longer. Every bite makes you bigger — but run into a wall or your own tail and it is game over.',
+        tips: 'Leave yourself an exit. As you get longer, move in wide loops around the edges instead of cutting through the middle where you can trap yourself.',
+        controls: [
+          { key: '←  →', action: 'Turn' },
+          { key: '↑  ↓', action: 'Turn' },
+          { key: 'W A S D', action: 'Turn' },
+        ],
+      },
+      'flappy-bird': {
+        name: 'Flappy Bird',
+        tagline: 'Endless Flyer',
+        src: '/games/flappy-bird/index.html',
+        description: 'Flap your way through an endless series of pipes. Tap to give the bird a quick lift and try to slip through each gap without touching anything.',
+        tips: 'Use small, steady taps rather than mashing — gentle flaps keep your height under control. Aim for the centre of each gap and look ahead to the next pipe.',
+        controls: [
+          { key: 'Space', action: 'Flap' },
+          { key: 'Click', action: 'Flap' },
+          { key: 'Tap', action: 'Flap (mobile)' },
+        ],
+      },
+      'minesweeper': {
+        name: 'Minesweeper',
+        tagline: 'Logic Puzzle',
+        src: '/games/minesweeper/index.html',
+        description: 'Clear the board without detonating a mine. Each revealed number tells you how many mines touch that square — use logic to deduce where the mines are hiding.',
+        tips: 'Start in the open middle of the board. Flag squares you are sure are mines, and look for numbers already satisfied by their flags so you can safely open the rest.',
+        controls: [
+          { key: 'Click', action: 'Reveal square' },
+          { key: 'R-Click', action: 'Place flag' },
+          { key: 'Mouse', action: 'Pick difficulty' },
+        ],
+      },
     };
 
     const ALL_GAMES = [
       { id: 'speed-runner', name: 'Dino Run' },
       { id: 'block-drop', name: 'Block Drop' },
       { id: 'slope', name: 'Slope' },
+      { id: '2048', name: '2048' },
+      { id: 'snake', name: 'Snake' },
+      { id: 'flappy-bird', name: 'Flappy Bird' },
+      { id: 'minesweeper', name: 'Minesweeper' },
     ];
 
     // Parse ?game= from URL
