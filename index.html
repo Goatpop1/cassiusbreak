@@ -440,6 +440,43 @@
     }
     .game-box-close:hover { color: var(--text); background: rgba(0,0,0,0.8); }
 
+    .game-play-screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      background: var(--bg2);
+      z-index: 5;
+    }
+    .game-play-screen.hidden { display: none; }
+
+    .game-play-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: 1px;
+    }
+
+    .game-play-btn {
+      padding: 12px 40px;
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      color: #081828;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 900;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity .15s, transform .12s;
+    }
+    .game-play-btn:hover { opacity: 0.88; transform: scale(1.04); }
+    .game-play-btn:active { transform: scale(0.97); }
+
     @media (max-width: 768px) {
       .game-view { left: 0; }
       .game-box { width: 88%; height: 55%; }
@@ -567,6 +604,10 @@
 <div class="game-view" id="game-view">
   <div class="game-box" id="game-box">
     <button class="game-box-close" id="game-box-close">✕ Close</button>
+    <div class="game-play-screen" id="game-play-screen">
+      <div class="game-play-title" id="game-play-title"></div>
+      <button class="game-play-btn" id="game-play-btn">▶ PLAY</button>
+    </div>
     <iframe id="game-view-frame" allowfullscreen scrolling="no" title="Game"></iframe>
   </div>
 </div>
@@ -885,24 +926,41 @@
   });
 
   /* ── GAME VIEW ── */
-  const gameView  = document.getElementById('game-view');
-  const gameFrame = document.getElementById('game-view-frame');
-  const closeBtn  = document.getElementById('game-box-close');
+  const gameView       = document.getElementById('game-view');
+  const gameFrame      = document.getElementById('game-view-frame');
+  const closeBtn       = document.getElementById('game-box-close');
+  const playScreen     = document.getElementById('game-play-screen');
+  const playTitle      = document.getElementById('game-play-title');
+  const playBtn        = document.getElementById('game-play-btn');
+  let   pendingGameSrc = '';
 
   function openGame(gameId) {
-    const src = GAME_SRC[gameId];
+    const src  = GAME_SRC[gameId];
+    const name = GAMES[gameId] ? GAMES[gameId].name : gameId;
     if (!src) return;
-    gameFrame.src = src;
+    pendingGameSrc = src;
+    gameFrame.src  = '';
+    playTitle.textContent = name;
+    playScreen.classList.remove('hidden');
     gameView.classList.add('active');
     document.body.style.overflow = 'hidden';
   }
 
+  function launchGame() {
+    if (!pendingGameSrc) return;
+    gameFrame.src = pendingGameSrc;
+    playScreen.classList.add('hidden');
+  }
+
   function closeGame() {
     gameView.classList.remove('active');
-    gameFrame.src = '';
+    gameFrame.src  = '';
+    pendingGameSrc = '';
+    playScreen.classList.remove('hidden');
     document.body.style.overflow = '';
   }
 
+  playBtn.addEventListener('click', launchGame);
   closeBtn.addEventListener('click', closeGame);
 
   document.addEventListener('keydown', e => {
