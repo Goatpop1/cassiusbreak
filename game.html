@@ -143,12 +143,61 @@
       position: relative;
     }
 
-    .game-wrapper {
-      position: relative;
-      width: 100%;
+    /* Stage = top ad bar + (side ad | game | side ad), fitted to the viewport */
+    .game-stage {
       height: calc(100vh - var(--header-height));
       display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 12px;
+    }
+
+    .game-row {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      gap: 12px;
       align-items: stretch;
+    }
+
+    /* Advertising placeholders around the game */
+    .ad-rail {
+      background: var(--bg-card);
+      border: 1px dashed rgba(56, 189, 248, 0.25);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 0.6rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .ad-top {
+      width: 100%;
+      max-width: 728px;
+      height: 90px;
+      margin: 0 auto;
+    }
+
+    .ad-side {
+      width: 160px;
+      align-self: stretch;
+    }
+
+    .game-wrapper {
+      position: relative;
+      flex: 1;
+      min-width: 0;
+      height: 100%;
+      display: flex;
+      align-items: stretch;
+      background: #000;
+      border-radius: 10px;
+      overflow: hidden;
     }
 
     #game-frame {
@@ -367,8 +416,21 @@
     }
 
     /* ── RESPONSIVE ──────────────────────────────────────── */
+    /* Drop the side ad rails when there isn't room for them */
+    @media (max-width: 1024px) {
+      .ad-side { display: none; }
+    }
+
     @media (max-width: 640px) {
-      .game-wrapper {
+      .game-stage {
+        height: auto;
+        gap: 8px;
+        padding: 8px;
+      }
+
+      .ad-top { height: 60px; }
+
+      .game-row {
         height: 60vh;
       }
 
@@ -409,23 +471,38 @@
 
     <!-- GAME BOX -->
     <div class="game-section">
-      <div class="game-wrapper">
-        <iframe id="game-frame" allowfullscreen scrolling="no" title="Game"></iframe>
+      <div class="game-stage">
 
-        <button class="fullscreen-btn" id="fullscreen-btn" title="Fullscreen">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
-            <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
-          </svg>
-          Fullscreen
-        </button>
+        <!-- Top advertisement -->
+        <div class="ad-rail ad-top" aria-label="Advertisement space">Advertisement</div>
 
-        <div class="scroll-hint" id="scroll-hint">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="6 9 12 15 18 9"/>
-          </svg>
-          Scroll for info
+        <div class="game-row">
+          <!-- Left advertisement -->
+          <div class="ad-rail ad-side ad-left" aria-label="Advertisement space">Advertisement</div>
+
+          <div class="game-wrapper">
+            <iframe id="game-frame" allowfullscreen scrolling="no" title="Game"></iframe>
+
+            <button class="fullscreen-btn" id="fullscreen-btn" title="Fullscreen">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+                <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+              </svg>
+              Fullscreen
+            </button>
+
+            <div class="scroll-hint" id="scroll-hint">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+              Scroll for info
+            </div>
+          </div>
+
+          <!-- Right advertisement -->
+          <div class="ad-rail ad-side ad-right" aria-label="Advertisement space">Advertisement</div>
         </div>
+
       </div>
     </div>
 
@@ -595,11 +672,11 @@
       moreGrid.appendChild(a);
     });
 
-    // Fullscreen button
-    const gameSection = document.querySelector('.game-section');
+    // Fullscreen button — fullscreen just the game, not the ad rails
+    const gameWrapper = document.querySelector('.game-wrapper');
     document.getElementById('fullscreen-btn').addEventListener('click', () => {
-      if (gameSection.requestFullscreen) gameSection.requestFullscreen();
-      else if (gameSection.webkitRequestFullscreen) gameSection.webkitRequestFullscreen();
+      if (gameWrapper.requestFullscreen) gameWrapper.requestFullscreen();
+      else if (gameWrapper.webkitRequestFullscreen) gameWrapper.webkitRequestFullscreen();
     });
 
     // Hide scroll hint once user scrolls
