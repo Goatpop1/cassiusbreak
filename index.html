@@ -258,7 +258,7 @@
 
     /* ── SECTION ROW ─────────────────────────── */
     .game-section {
-      margin-bottom: 32px;
+      margin-bottom: 28px;
       scroll-margin-top: calc(var(--topbar-h) + 16px);
     }
 
@@ -266,38 +266,36 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
     .sec-title {
-      font-size: 1.05rem;
-      font-weight: 800;
-      letter-spacing: -0.2px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      color: var(--text3);
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 7px;
     }
     .sec-dot {
       display: inline-block;
-      width: 6px; height: 6px;
+      width: 4px; height: 4px;
       border-radius: 50%;
-      background: var(--accent);
+      background: var(--text3);
       flex-shrink: 0;
     }
     .sec-star {
-      font-size: 0.8rem;
+      font-size: 0.72rem;
       color: var(--accent);
     }
-    .sec-count {
-      font-size: 0.72rem;
-      font-weight: 600;
-      color: var(--text3);
-    }
+    .sec-count { display: none; }
 
     /* ── CARDS GRID ──────────────────────────── */
     .cards-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(158px, 1fr));
-      gap: 13px;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 14px;
     }
 
     /* ── GAME CARD ───────────────────────────── */
@@ -480,7 +478,7 @@
 
     /* ── RESPONSIVE ──────────────────────────── */
     @media (max-width: 960px) {
-      .cards-grid { grid-template-columns: repeat(auto-fill, minmax(144px, 1fr)); }
+      .cards-grid { grid-template-columns: repeat(auto-fill, minmax(175px, 1fr)); }
     }
 
     @media (max-width: 768px) {
