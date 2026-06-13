@@ -6,13 +6,13 @@
   <title>CassiusBreak — Free Unblocked Games You Can Play at School</title>
   <meta name="description" content="Play free unblocked games instantly — no downloads, no sign-up. CassiusBreak Originals: Dino Run, Block Drop and Slope. Works on any school network or device.">
   <meta name="keywords" content="unblocked games, free games, school games, dino run, block drop, slope, games at school">
-  <meta name="theme-color" content="#0F0F0F">
+  <meta name="theme-color" content="#010A18">
   <meta property="og:title" content="CassiusBreak — Free Unblocked Games">
   <meta property="og:description" content="Free unblocked games that work at school. No downloads, no sign-up.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://cassiusbreak.com">
   <link rel="canonical" href="https://cassiusbreak.com">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230F0F0F'/><text x='50' y='72' font-size='64' font-family='Arial' font-weight='900' text-anchor='middle' fill='%2300A8FF'>C</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23010A18'/><text x='50' y='72' font-size='64' font-family='Arial' font-weight='900' text-anchor='middle' fill='%2300BFFF'>C</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -21,21 +21,23 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --accent:      #00A8FF;
-      --accent-dim:  rgba(0,168,255,0.12);
-      --accent-glow: rgba(0,168,255,0.25);
-      --bg:          #0F0F0F;
-      --bg2:         #161616;
-      --bg3:         #1C1C1C;
-      --bg4:         #242424;
-      --border:      rgba(255,255,255,0.07);
-      --border2:     rgba(255,255,255,0.11);
-      --text:        #F0F0F0;
-      --text2:       #999;
-      --text3:       #555;
+      --accent:      #00BFFF;
+      --accent-dim:  rgba(0,191,255,0.14);
+      --accent-glow: rgba(0,191,255,0.30);
+      --bg:          #010A18;
+      --bg2:         #020F20;
+      --bg3:         #04172E;
+      --bg4:         #061E3C;
+      --border:      rgba(0,191,255,0.10);
+      --border2:     rgba(0,191,255,0.20);
+      --text:        #E8F4FF;
+      --text2:       #6EA8CC;
+      --text3:       #2D5A7A;
       --topbar-h:    58px;
       --sidebar-w:   244px;
       --r:           10px;
+      --row-light:   #5ECEFF;
+      --row-dark:    #003A8C;
     }
 
     html { scroll-behavior: smooth; overflow-x: hidden; }
@@ -55,7 +57,7 @@
       position: fixed;
       top: 0; left: 0; right: 0;
       height: var(--topbar-h);
-      background: rgba(15,15,15,0.9);
+      background: rgba(1,10,24,0.92);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--border);
@@ -258,7 +260,7 @@
 
     /* ── SECTION ROW ─────────────────────────── */
     .game-section {
-      margin-bottom: 28px;
+      margin-bottom: 18px;
       scroll-margin-top: calc(var(--topbar-h) + 16px);
     }
 
@@ -291,27 +293,33 @@
     }
     .sec-count { display: none; }
 
+    /* ── SECTION HEADS hidden ────────────────── */
+    .sec-head { display: none; }
+
     /* ── CARDS GRID ──────────────────────────── */
     .cards-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 14px;
+      background: linear-gradient(to right, var(--row-light) 0%, var(--row-dark) 100%);
+      padding: 10px;
+      border-radius: calc(var(--r) + 4px);
     }
 
     /* ── GAME CARD ───────────────────────────── */
     .game-card {
       border-radius: var(--r);
       overflow: hidden;
-      background: var(--bg3);
-      border: 1px solid var(--border);
+      background: rgba(1,10,24,0.82);
+      border: 1px solid rgba(0,191,255,0.18);
       display: block;
       position: relative;
       transition: transform .2s, border-color .2s, box-shadow .2s;
     }
     a.game-card:hover {
       transform: translateY(-4px);
-      border-color: rgba(0,168,255,0.35);
-      box-shadow: 0 8px 22px rgba(0,168,255,0.14), 0 2px 8px rgba(0,0,0,0.45);
+      border-color: rgba(0,191,255,0.45);
+      box-shadow: 0 8px 22px rgba(0,191,255,0.22), 0 2px 8px rgba(0,0,0,0.55);
     }
 
     .card-thumb {
@@ -328,14 +336,14 @@
     a.game-card:hover .card-thumb img { transform: scale(1.06); }
 
     /* Placeholder thumb backgrounds */
-    .ph-action  { background: linear-gradient(135deg, #1a0c0c, #260e0e); }
-    .ph-puzzle  { background: linear-gradient(135deg, #0d0d1c, #131328); }
-    .ph-racing  { background: linear-gradient(135deg, #0a1600, #0e1e00); }
-    .ph-shooter { background: linear-gradient(135deg, #1a0e00, #221400); }
-    .ph-sports  { background: linear-gradient(135deg, #001a0e, #002016); }
-    .ph-arcade  { background: linear-gradient(135deg, #1a1400, #201a00); }
-    .ph-skill   { background: linear-gradient(135deg, #001418, #001c22); }
-    .ph-io      { background: linear-gradient(135deg, #140014, #1e001e); }
+    .ph-action  { background: linear-gradient(135deg, #001D3D, #003070); }
+    .ph-puzzle  { background: linear-gradient(135deg, #001828, #002A4A); }
+    .ph-racing  { background: linear-gradient(135deg, #001530, #003060); }
+    .ph-shooter { background: linear-gradient(135deg, #001A38, #002D5C); }
+    .ph-sports  { background: linear-gradient(135deg, #00122A, #002248); }
+    .ph-arcade  { background: linear-gradient(135deg, #001830, #003268); }
+    .ph-skill   { background: linear-gradient(135deg, #001428, #00264E); }
+    .ph-io      { background: linear-gradient(135deg, #001C3C, #003272); }
 
     .ph-inner {
       position: absolute;
@@ -378,7 +386,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 16px rgba(0,168,255,0.55);
+      box-shadow: 0 4px 16px rgba(0,191,255,0.60);
       transform: scale(0.78);
       transition: transform .18s;
     }
